@@ -25,7 +25,7 @@ function getInsights(c: Campaign) {
 
   // ROAS insight
   if (c.roas >= benchmark * 1.2) {
-    insights.push({ type: 'success', icon: 'trending-up', title: 'Strong ROAS performance', body: `This campaign is returning ${c.roas}x ROAS — ${Math.abs(roasDiff).toFixed(0)}% above the ${c.platform} benchmark of ${benchmark}x. Consider increasing daily budget by 15–25% to scale revenue while efficiency holds.` })
+    insights.push({ type: 'success', icon: 'trending-up', title: 'Strong ROAS performance', body: `This campaign is returning ${c.roas}x ROAS â ${Math.abs(roasDiff).toFixed(0)}% above the ${c.platform} benchmark of ${benchmark}x. Consider increasing daily budget by 15â25% to scale revenue while efficiency holds.` })
   } else if (c.roas >= benchmark * 0.8) {
     insights.push({ type: 'warn', icon: 'target', title: 'ROAS near benchmark', body: `At ${c.roas}x, this campaign is close to the ${c.platform} average of ${benchmark}x. Focus on improving ad creative and audience targeting to push above ${(benchmark * 1.2).toFixed(1)}x.` })
   } else {
@@ -34,7 +34,7 @@ function getInsights(c: Campaign) {
 
   // CTR insight
   if (c.ctr > 3.5) {
-    insights.push({ type: 'success', icon: 'check', title: 'High click-through rate', body: `CTR of ${c.ctr}% is strong — your creative and targeting are resonating. The ad copy and visuals are compelling the right audience to click.` })
+    insights.push({ type: 'success', icon: 'check', title: 'High click-through rate', body: `CTR of ${c.ctr}% is strong â your creative and targeting are resonating. The ad copy and visuals are compelling the right audience to click.` })
   } else if (c.ctr < 1.5) {
     insights.push({ type: 'warn', icon: 'alert', title: 'Low click-through rate', body: `CTR of ${c.ctr}% suggests your creative or targeting may need refreshing. Try A/B testing new headlines or narrowing your audience. Use the Variants Generator to create new ad copy angles.` })
   }
@@ -42,22 +42,22 @@ function getInsights(c: Campaign) {
   // CPC insight
   const targetCpc = c.platform === 'Meta' ? 0.25 : c.platform === 'Google' ? 0.50 : 0.15
   if (c.cpc > targetCpc * 1.5) {
-    insights.push({ type: 'warn', icon: 'dollar', title: 'CPC running high', body: `Cost per click of £${c.cpc.toFixed(2)} is above the typical range for ${c.platform}. Review your bid strategy — switching to cost cap bidding may help reduce spend wastage.` })
+    insights.push({ type: 'warn', icon: 'dollar', title: 'CPC running high', body: `Cost per click of Â£${c.cpc.toFixed(2)} is above the typical range for ${c.platform}. Review your bid strategy â switching to cost cap bidding may help reduce spend wastage.` })
   } else if (c.cpc < targetCpc * 0.7) {
-    insights.push({ type: 'success', icon: 'check', title: 'Efficient cost per click', body: `CPC of £${c.cpc.toFixed(2)} is well below average for ${c.platform}. Your targeting is efficient — this is a signal to increase budget and capture more volume.` })
+    insights.push({ type: 'success', icon: 'check', title: 'Efficient cost per click', body: `CPC of Â£${c.cpc.toFixed(2)} is well below average for ${c.platform}. Your targeting is efficient â this is a signal to increase budget and capture more volume.` })
   }
 
   // Status-specific
   if (c.status === 'Paused') {
-    insights.push({ type: 'info', icon: 'lightbulb', title: 'Campaign is paused', body: `This campaign has ${c.roas >= benchmark ? 'solid ROAS history — consider reactivating it, especially if you have budget from underperforming campaigns to reallocate.' : 'underperformed historically. Before reactivating, refresh the creative and tighten the target audience.'}` })
+    insights.push({ type: 'info', icon: 'lightbulb', title: 'Campaign is paused', body: `This campaign has ${c.roas >= benchmark ? 'solid ROAS history â consider reactivating it, especially if you have budget from underperforming campaigns to reallocate.' : 'underperformed historically. Before reactivating, refresh the creative and tighten the target audience.'}` })
   }
   if (c.status === 'Ended') {
-    insights.push({ type: 'info', icon: 'lightbulb', title: 'Learnings from this campaign', body: `This campaign generated ${c.conversions.toLocaleString()} conversions at a ${c.roas}x ROAS. ${c.roas >= benchmark ? 'The results were strong — use this as a template for future campaigns on ' + c.platform + '.' : 'Review what underperformed and apply those learnings to your next ' + c.platform + ' campaign.'}` })
+    insights.push({ type: 'info', icon: 'lightbulb', title: 'Learnings from this campaign', body: `This campaign generated ${c.conversions.toLocaleString()} conversions at a ${c.roas}x ROAS. ${c.roas >= benchmark ? 'The results were strong â use this as a template for future campaigns on ' + c.platform + '.' : 'Review what underperformed and apply those learnings to your next ' + c.platform + ' campaign.'}` })
   }
 
   // Conversion volume
   if (c.conversions > 400) {
-    insights.push({ type: 'success', icon: 'check', title: 'High conversion volume', body: `${c.conversions.toLocaleString()} conversions gives the ${c.platform} algorithm strong data to optimise against. This campaign has enough signal — trust the algorithm and avoid making frequent bid changes.` })
+    insights.push({ type: 'success', icon: 'check', title: 'High conversion volume', body: `${c.conversions.toLocaleString()} conversions gives the ${c.platform} algorithm strong data to optimise against. This campaign has enough signal â trust the algorithm and avoid making frequent bid changes.` })
   } else if (c.conversions < 100 && c.status === 'Active') {
     insights.push({ type: 'warn', icon: 'alert', title: 'Low conversion data', body: `Only ${c.conversions} conversions recorded. The algorithm may be in learning phase with limited data. Give it at least 50 more conversions before making major changes, or switch to a higher-funnel objective like Add to Cart.` })
   }
@@ -125,8 +125,8 @@ function CampaignDrawer({ campaign: c, onClose }: { campaign: Campaign; onClose:
             </div>
             <h2 className="text-[17px] font-semibold leading-tight">{c.name}</h2>
             <div className="text-[11px] mt-0.5" style={{ color: 'var(--text2)' }}>
-              {c.objective} · Started {new Date(c.startDate).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}
-              {c.endDate ? ` · Ended ${new Date(c.endDate).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}` : ''}
+              {c.objective} Â· Started {new Date(c.startDate).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}
+              {c.endDate ? ` Â· Ended ${new Date(c.endDate).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}` : ''}
             </div>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg transition-colors hover:bg-[var(--bg3)]" style={{ color: 'var(--text2)' }}>
@@ -140,9 +140,9 @@ function CampaignDrawer({ campaign: c, onClose }: { campaign: Campaign; onClose:
           <div className="grid grid-cols-2 gap-2.5">
             {[
               { label: 'ROAS', value: `${c.roas}x`, sub: `Benchmark: ${benchmark}x`, color: c.roas >= benchmark ? 'var(--teal)' : 'var(--danger)', icon: <TrendingUp size={13} /> },
-              { label: 'Revenue', value: `£${c.revenue.toLocaleString()}`, sub: `Spend: £${c.spend.toLocaleString()}`, color: 'var(--text)', icon: <DollarSign size={13} /> },
-              { label: 'Conversions', value: c.conversions.toLocaleString(), sub: `CPА: £${(c.spend / c.conversions).toFixed(2)}`, color: 'var(--text)', icon: <Target size={13} /> },
-              { label: 'CTR', value: `${c.ctr}%`, sub: `CPC: £${c.cpc.toFixed(2)}`, color: c.ctr > 2.5 ? 'var(--teal)' : c.ctr < 1.5 ? 'var(--warn)' : 'var(--text)', icon: <MousePointer size={13} /> },
+              { label: 'Revenue', value: `Â£${c.revenue.toLocaleString()}`, sub: `Spend: Â£${c.spend.toLocaleString()}`, color: 'var(--text)', icon: <DollarSign size={13} /> },
+              { label: 'Conversions', value: c.conversions.toLocaleString(), sub: `CPÐ: Â£${(c.spend / c.conversions).toFixed(2)}`, color: 'var(--text)', icon: <Target size={13} /> },
+              { label: 'CTR', value: `${c.ctr}%`, sub: `CPC: Â£${c.cpc.toFixed(2)}`, color: c.ctr > 2.5 ? 'var(--teal)' : c.ctr < 1.5 ? 'var(--warn)' : 'var(--text)', icon: <MousePointer size={13} /> },
             ].map((kpi, i) => (
               <div key={i} className="rounded-lg p-3" style={{ background: 'var(--bg3)', border: '1px solid var(--border)' }}>
                 <div className="flex items-center gap-1.5 mb-1.5" style={{ color: 'var(--text2)' }}>
@@ -172,7 +172,7 @@ function CampaignDrawer({ campaign: c, onClose }: { campaign: Campaign; onClose:
             </div>
             <div className="flex justify-between text-[10px] mt-1.5" style={{ color: 'var(--text3)' }}>
               <span>0x</span>
-              <span>Benchmark {benchmark}x ↑</span>
+              <span>Benchmark {benchmark}x â</span>
               <span>{(benchmark * 2).toFixed(0)}x</span>
             </div>
           </div>
@@ -212,8 +212,8 @@ function CampaignDrawer({ campaign: c, onClose }: { campaign: Campaign; onClose:
               </button>
               <button className="text-[12px] px-3 py-1.5 rounded-lg border font-medium transition-colors"
                 style={{ borderColor: 'rgba(0,212,160,0.3)', color: 'var(--teal)', background: 'var(--teal-dim)' }}
-                onClick={() => window.location.href = '/variants'}>
-                Generate new variants →
+                onClick={() => { const a = document.createElement('a'); a.href = '/variants'; a.click(); }}>
+                Generate new variants â
               </button>
             </div>
           </div>
@@ -298,7 +298,7 @@ export function CampaignTable() {
                       </span>
                     </td>
                     <td className="px-3 py-3"><StatusBadge status={c.status} /></td>
-                    <td className="px-3 py-3">£{c.spend.toLocaleString()}</td>
+                    <td className="px-3 py-3">Â£{c.spend.toLocaleString()}</td>
                     <td className="px-3 py-3">{(c.clicks/1000).toFixed(1)}K</td>
                     <td className="px-3 py-3">{c.conversions.toLocaleString()}</td>
                     <td className="px-3 py-3"><RoasValue roas={c.roas} /></td>
@@ -307,7 +307,7 @@ export function CampaignTable() {
                         className="px-2.5 py-1 rounded-[5px] border text-[11px] transition-colors"
                         style={{ borderColor:'var(--teal-dim2)', background:'var(--teal-dim)', color:'var(--teal)' }}
                         onClick={e => { e.stopPropagation(); setSelectedCampaign(c) }}>
-                        View →
+                        View â
                       </button>
                     </td>
                   </tr>
