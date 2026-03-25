@@ -19,7 +19,7 @@
     "papaparse": "^5.4.1",
     "@types/papaparse": "^5.3.14",
     "@supabase/supabase-js": "^2.39.0",
-    "@clerk/nextjs": "^6.0.0"
+    "@clerk/nextjs": "^5.7.2"
   },
   "devDependencies": {
     "typescript": "^5",
