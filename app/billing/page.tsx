@@ -1,9 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { PageHeader } from '@/components/ui'
 import { useUser } from '@clerk/nextjs'
 import { supabase } from '@/lib/supabase'
+import { Suspense } from 'react'
 
 const PLANS = [
   {
@@ -14,7 +15,7 @@ const PLANS = [
     description: 'For growing agencies managing a handful of clients.',
     features: [
       'Up to 5 client accounts',
-      '20 AI analysis calls/month',
+      '20 AI analysis calls / month',
       'Campaign dashboard & insights',
       'CSV data import',
       'Email support',
@@ -30,7 +31,7 @@ const PLANS = [
     description: 'For serious agencies scaling their ad operations.',
     features: [
       'Up to 25 client accounts',
-      '100 AI analysis calls/month',
+      '100 AI analysis calls / month',
       'Everything in Starter',
       'Ad Variant Generator',
       'ROAS benchmarking',
@@ -53,25 +54,28 @@ const PLANS = [
       'Dedicated account manager',
       'Custom integrations',
     ],
-    cta: 'Contact Sales',
+    cta: 'Select Agency',
     highlight: false,
   },
 ]
 
-export default function BillingPage() {
+function BillingContent() {
   const { user } = useUser()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
-  const [successMsg, setSuccessMsg] = useState('')
+  const [banner, setBanner] = useState<{ type: 'success' | 'error'; msg: string } | null>(null)
 
   useEffect(() => {
-    // Check for success/cancel URL params
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('success')) setSuccessMsg('🎉 Payment successful! Your plan has been activated.')
-    if (params.get('cancelled')) setSuccessMsg('')
+    if (searchParams.get('success')) {
+      setBanner({ type: 'success', msg: '🎉 Payment successful! Your plan is now active.' })
+    } else if (searchParams.get('cancelled')) {
+      setBanner({ type: 'error', msg: 'Checkout cancelled — no charge was made.' })
+    }
+  }, [searchParams])
 
-    // Load current plan from Supabase
+  useEffect(() => {
     async function loadPlan() {
       if (!user) return
       const { data } = await supabase
@@ -85,10 +89,6 @@ export default function BillingPage() {
   }, [user])
 
   const handleSelect = async (planId: string) => {
-    if (planId === 'agency') {
-      window.location.href = 'mailto:hello@pulse.com?subject=Agency Plan Enquiry'
-      return
-    }
     if (!user) { router.push('/sign-in'); return }
     setLoading(planId)
     try {
@@ -98,11 +98,13 @@ export default function BillingPage() {
         body: JSON.stringify({ plan: planId }),
       })
       const data = await res.json()
-      if (data.url) window.location.href = data.url
-      else throw new Error(data.error || 'Failed to create checkout session')
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        throw new Error(data.error || 'Failed to create checkout session')
+      }
     } catch (err: any) {
-      alert('Error: ' + err.message)
-    } finally {
+      setBanner({ type: 'error', msg: 'Error: ' + err.message })
       setLoading(null)
     }
   }
@@ -114,14 +116,19 @@ export default function BillingPage() {
         subtitle="Choose the plan that fits your agency. Upgrade or downgrade anytime."
       />
 
-      {successMsg && (
-        <div className="mb-6 px-4 py-3 rounded-lg text-[13px] font-medium"
-          style={{ background: 'rgba(0,212,160,0.1)', color: 'var(--teal)', border: '1px solid rgba(0,212,160,0.2)' }}>
-          {successMsg}
+      {banner && (
+        <div className="mb-6 px-4 py-3 rounded-lg text-[13px] font-medium flex items-center justify-between"
+          style={{
+            background: banner.type === 'success' ? 'rgba(0,212,160,0.1)' : 'rgba(255,92,92,0.1)',
+            color: banner.type === 'success' ? 'var(--teal)' : 'var(--danger)',
+            border: `1px solid ${banner.type === 'success' ? 'rgba(0,212,160,0.25)' : 'rgba(255,92,92,0.25)'}`,
+          }}>
+          <span>{banner.msg}</span>
+          <button onClick={() => setBanner(null)} className="ml-4 opacity-60 hover:opacity-100">✕</button>
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-5 mb-10">
+      <div className="grid grid-cols-3 gap-5 mb-8">
         {PLANS.map(plan => {
           const isActive = currentPlan === plan.id
           const isLoading = loading === plan.id
@@ -129,8 +136,8 @@ export default function BillingPage() {
             <div key={plan.id}
               className="rounded-xl border flex flex-col relative overflow-hidden"
               style={{
-                background: plan.highlight ? 'linear-gradient(160deg, rgba(0,212,160,0.08), var(--bg2))' : 'var(--bg2)',
-                borderColor: plan.highlight ? 'rgba(0,212,160,0.35)' : 'var(--border)',
+                background: plan.highlight ? 'linear-gradient(160deg, rgba(0,212,160,0.07), var(--bg2))' : 'var(--bg2)',
+                borderColor: plan.highlight ? 'rgba(0,212,160,0.4)' : isActive ? 'rgba(0,212,160,0.3)' : 'var(--border)',
               }}>
               {plan.highlight && (
                 <div className="absolute top-0 right-0 text-[10px] font-bold px-3 py-1 rounded-bl-lg"
@@ -139,18 +146,21 @@ export default function BillingPage() {
                 </div>
               )}
               <div className="p-6 flex-1">
-                <div className="text-[13px] font-semibold mb-1" style={{ color: plan.highlight ? 'var(--teal)' : 'var(--text2)' }}>
+                <div className="text-[13px] font-semibold mb-1.5"
+                  style={{ color: plan.highlight ? 'var(--teal)' : 'var(--text2)' }}>
                   {plan.name}
                 </div>
                 <div className="flex items-end gap-1 mb-2">
-                  <span className="text-[32px] font-bold">{plan.price}</span>
-                  <span className="text-[13px] mb-1.5" style={{ color: 'var(--text2)' }}>{plan.period}</span>
+                  <span className="text-[34px] font-bold leading-none">{plan.price}</span>
+                  <span className="text-[13px] mb-1" style={{ color: 'var(--text2)' }}>{plan.period}</span>
                 </div>
-                <p className="text-[12px] mb-5" style={{ color: 'var(--text2)' }}>{plan.description}</p>
-                <ul className="flex flex-col gap-2">
+                <p className="text-[12px] mb-5 leading-relaxed" style={{ color: 'var(--text2)' }}>
+                  {plan.description}
+                </p>
+                <ul className="flex flex-col gap-2.5">
                   {plan.features.map((f, i) => (
                     <li key={i} className="flex items-start gap-2 text-[12px]">
-                      <span style={{ color: 'var(--teal)' }}>✓</span>
+                      <span className="mt-0.5 shrink-0" style={{ color: 'var(--teal)' }}>✓</span>
                       <span style={{ color: 'var(--text2)' }}>{f}</span>
                     </li>
                   ))}
@@ -174,7 +184,7 @@ export default function BillingPage() {
                       opacity: loading && !isLoading ? 0.5 : 1,
                       cursor: loading ? 'wait' : 'pointer',
                     }}>
-                    {isLoading ? 'Redirecting to Stripe...' : plan.cta}
+                    {isLoading ? '↗ Redirecting to Stripe...' : plan.cta}
                   </button>
                 )}
               </div>
@@ -183,25 +193,27 @@ export default function BillingPage() {
         })}
       </div>
 
-      {/* Current plan info */}
-      {currentPlan && (
-        <div className="rounded-xl border p-5" style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
-          <div className="text-[14px] font-semibold mb-1">Current subscription</div>
-          <div className="text-[13px]" style={{ color: 'var(--text2)' }}>
-            You are on the <span className="font-semibold capitalize" style={{ color: 'var(--teal)' }}>{currentPlan}</span> plan.
-            To manage your subscription, invoices or cancel, use the billing portal.
+      <div className="rounded-xl border p-5 flex items-center justify-between"
+        style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
+        <div>
+          <div className="text-[13px] font-semibold mb-0.5">🔒 Secure payments by Stripe</div>
+          <div className="text-[12px]" style={{ color: 'var(--text2)' }}>
+            All plans include a 14-day free trial. Cancel anytime — no questions asked.
           </div>
-          <button
-            onClick={async () => {
-              // Portal redirect would go here with customerId
-              alert('Billing portal coming soon — contact support to manage your subscription.')
-            }}
-            className="mt-3 text-[12px] px-4 py-2 rounded-lg border transition-colors"
-            style={{ borderColor: 'var(--border2)', color: 'var(--text2)' }}>
-            Manage subscription →
-          </button>
         </div>
-      )}
+        <div className="flex gap-3 shrink-0">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard" className="h-6 opacity-60" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-6 opacity-60" />
+        </div>
+      </div>
     </>
+  )
+}
+
+export default function BillingPage() {
+  return (
+    <Suspense fallback={<div />}>
+      <BillingContent />
+    </Suspense>
   )
 }
