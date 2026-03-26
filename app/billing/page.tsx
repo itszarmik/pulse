@@ -1,110 +1,207 @@
 'use client'
-import { PageHeader, Button, Card } from '@/components/ui'
-import { Check, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { PageHeader } from '@/components/ui'
+import { useUser } from '@clerk/nextjs'
+import { supabase } from '@/lib/supabase'
 
 const PLANS = [
-  { id:'starter', name:'Starter', badge:'Entry Level', badgeColor:'var(--text2)', price:99, desc:'Perfect for solo DTC brand owners getting started with AI ad analytics.', featured:false, current:false, cta:'Select Starter',
-    features:[{l:'Up to 5 connected campaigns',on:true},{l:'20 AI analysis calls/month',on:true},{l:'Meta & Google Ads integration',on:true},{l:'CSV data import',on:true},{l:'Multi-client management',on:false},{l:'Ad variant generator',on:false},{l:'AI optimisation suggestions',on:false}] },
-  { id:'pro', name:'Pro', badge:'Most Popular', badgeColor:'var(--teal)', price:499, desc:'Built for marketing managers scaling spend across multiple platforms.', featured:true, current:true, cta:'Current Plan',
-    features:[{l:'Up to 25 connected campaigns',on:true},{l:'100 AI analysis calls/month',on:true},{l:'Meta, Google & TikTok',on:true},{l:'CSV data import',on:true},{l:'Ad variant generator',on:true},{l:'AI optimisation suggestions',on:true},{l:'Multi-client management',on:false}] },
-  { id:'agency', name:'Agency', badge:'Enterprise', badgeColor:'var(--warn)', price:1999, desc:'For digital agencies managing multiple clients at scale.', featured:false, current:false, cta:'Select Agency',
-    features:[{l:'Unlimited campaigns',on:true},{l:'Unlimited AI calls',on:true},{l:'All platform integrations',on:true},{l:'Multi-client management',on:true},{l:'White-label exports',on:true},{l:'Priority support & onboarding',on:true},{l:'Custom integrations & API',on:true}] },
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: '£99',
+    period: '/month',
+    description: 'For growing agencies managing a handful of clients.',
+    features: [
+      'Up to 5 client accounts',
+      '20 AI analysis calls/month',
+      'Campaign dashboard & insights',
+      'CSV data import',
+      'Email support',
+    ],
+    cta: 'Select Starter',
+    highlight: false,
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    price: '£499',
+    period: '/month',
+    description: 'For serious agencies scaling their ad operations.',
+    features: [
+      'Up to 25 client accounts',
+      '100 AI analysis calls/month',
+      'Everything in Starter',
+      'Ad Variant Generator',
+      'ROAS benchmarking',
+      'Priority support',
+    ],
+    cta: 'Select Pro',
+    highlight: true,
+  },
+  {
+    id: 'agency',
+    name: 'Agency',
+    price: '£1,999',
+    period: '/month',
+    description: 'For large agencies with high-volume needs.',
+    features: [
+      'Unlimited client accounts',
+      'Unlimited AI calls',
+      'Everything in Pro',
+      'White-label reports',
+      'Dedicated account manager',
+      'Custom integrations',
+    ],
+    cta: 'Contact Sales',
+    highlight: false,
+  },
 ]
 
-const USAGE = [{ label:'Campaigns', used:4, total:25 },{ label:'AI Calls', used:14, total:100 },{ label:'Data syncs', used:22, total:50 }]
-
 export default function BillingPage() {
+  const { user } = useUser()
+  const router = useRouter()
+  const [currentPlan, setCurrentPlan] = useState<string | null>(null)
+  const [loading, setLoading] = useState<string | null>(null)
+  const [successMsg, setSuccessMsg] = useState('')
+
+  useEffect(() => {
+    // Check for success/cancel URL params
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('success')) setSuccessMsg('🎉 Payment successful! Your plan has been activated.')
+    if (params.get('cancelled')) setSuccessMsg('')
+
+    // Load current plan from Supabase
+    async function loadPlan() {
+      if (!user) return
+      const { data } = await supabase
+        .from('user_plans')
+        .select('plan')
+        .eq('user_id', user.id)
+        .single()
+      if (data) setCurrentPlan(data.plan)
+    }
+    loadPlan()
+  }, [user])
+
+  const handleSelect = async (planId: string) => {
+    if (planId === 'agency') {
+      window.location.href = 'mailto:hello@pulse.com?subject=Agency Plan Enquiry'
+      return
+    }
+    if (!user) { router.push('/sign-in'); return }
+    setLoading(planId)
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: planId }),
+      })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+      else throw new Error(data.error || 'Failed to create checkout session')
+    } catch (err: any) {
+      alert('Error: ' + err.message)
+    } finally {
+      setLoading(null)
+    }
+  }
+
   return (
     <>
-      <PageHeader title="Subscription & Billing" subtitle="Manage your plan, track usage, and review payment history.">
-        <Button>Manage Settings</Button>
-      </PageHeader>
-      <Card className="mb-7">
-        <div className="flex items-start justify-between mb-5">
-          <div>
-            <div className="text-[11px] mb-1" style={{ color:'var(--text2)' }}>Current Plan</div>
-            <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold"
-                style={{ background:'rgba(0,212,160,0.1)', color:'var(--teal)' }}>● Active</span>
-              <span className="font-mono text-[22px] font-bold">Pro</span>
-              <span className="text-[13px]" style={{ color:'var(--text2)' }}>$499 / month</span>
-            </div>
-            <div className="text-[12px] mt-1" style={{ color:'var(--text2)' }}>Next billing date: April 22, 2026</div>
-          </div>
-          <Button size="sm">Download Invoice</Button>
+      <PageHeader
+        title="Plans & Billing"
+        subtitle="Choose the plan that fits your agency. Upgrade or downgrade anytime."
+      />
+
+      {successMsg && (
+        <div className="mb-6 px-4 py-3 rounded-lg text-[13px] font-medium"
+          style={{ background: 'rgba(0,212,160,0.1)', color: 'var(--teal)', border: '1px solid rgba(0,212,160,0.2)' }}>
+          {successMsg}
         </div>
-        <div className="grid grid-cols-3 gap-5">
-          {USAGE.map(u => (
-            <div key={u.label}>
-              <div className="flex justify-between text-[12px] mb-1.5">
-                <span style={{ color:'var(--text2)' }}>{u.label}</span>
-                <span><span className="font-medium">{u.used}</span><span style={{ color:'var(--text2)' }}> of {u.total}</span></span>
+      )}
+
+      <div className="grid grid-cols-3 gap-5 mb-10">
+        {PLANS.map(plan => {
+          const isActive = currentPlan === plan.id
+          const isLoading = loading === plan.id
+          return (
+            <div key={plan.id}
+              className="rounded-xl border flex flex-col relative overflow-hidden"
+              style={{
+                background: plan.highlight ? 'linear-gradient(160deg, rgba(0,212,160,0.08), var(--bg2))' : 'var(--bg2)',
+                borderColor: plan.highlight ? 'rgba(0,212,160,0.35)' : 'var(--border)',
+              }}>
+              {plan.highlight && (
+                <div className="absolute top-0 right-0 text-[10px] font-bold px-3 py-1 rounded-bl-lg"
+                  style={{ background: 'var(--teal)', color: '#001a12' }}>
+                  MOST POPULAR
+                </div>
+              )}
+              <div className="p-6 flex-1">
+                <div className="text-[13px] font-semibold mb-1" style={{ color: plan.highlight ? 'var(--teal)' : 'var(--text2)' }}>
+                  {plan.name}
+                </div>
+                <div className="flex items-end gap-1 mb-2">
+                  <span className="text-[32px] font-bold">{plan.price}</span>
+                  <span className="text-[13px] mb-1.5" style={{ color: 'var(--text2)' }}>{plan.period}</span>
+                </div>
+                <p className="text-[12px] mb-5" style={{ color: 'var(--text2)' }}>{plan.description}</p>
+                <ul className="flex flex-col gap-2">
+                  {plan.features.map((f, i) => (
+                    <li key={i} className="flex items-start gap-2 text-[12px]">
+                      <span style={{ color: 'var(--teal)' }}>✓</span>
+                      <span style={{ color: 'var(--text2)' }}>{f}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <div className="h-1.5 rounded-full" style={{ background:'var(--bg4)' }}>
-                <div className="h-full rounded-full transition-all"
-                  style={{ width:`${(u.used/u.total)*100}%`, background:u.used/u.total>0.8?'var(--warn)':'var(--teal)' }} />
+              <div className="p-6 pt-0">
+                {isActive ? (
+                  <div className="w-full py-2.5 rounded-lg text-[13px] font-semibold text-center border"
+                    style={{ borderColor: 'var(--teal)', color: 'var(--teal)', background: 'var(--teal-dim)' }}>
+                    ✓ Current Plan
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleSelect(plan.id)}
+                    disabled={!!loading}
+                    className="w-full py-2.5 rounded-lg text-[13px] font-semibold transition-all"
+                    style={{
+                      background: plan.highlight ? 'var(--teal)' : 'var(--bg3)',
+                      color: plan.highlight ? '#001a12' : 'var(--text)',
+                      border: plan.highlight ? 'none' : '1px solid var(--border2)',
+                      opacity: loading && !isLoading ? 0.5 : 1,
+                      cursor: loading ? 'wait' : 'pointer',
+                    }}>
+                    {isLoading ? 'Redirecting to Stripe...' : plan.cta}
+                  </button>
+                )}
               </div>
             </div>
-          ))}
-        </div>
-      </Card>
-      <div className="text-[15px] font-semibold mb-1.5">Choose Your Plan</div>
-      <div className="text-[13px] mb-5" style={{ color:'var(--text2)' }}>Scale your AI-powered ad intelligence as your ad spend grows.</div>
-      <div className="grid grid-cols-3 gap-3.5 mb-7">
-        {PLANS.map(plan => (
-          <div key={plan.id} className="rounded-xl border p-5 relative"
-            style={{ background:'var(--bg2)', borderColor:plan.featured?'var(--teal)':'var(--border)' }}>
-            {plan.featured && <div className="absolute -top-px right-4 text-[10px] font-bold px-2.5 py-1 rounded-b-md"
-              style={{ background:'var(--teal)', color:'#001a12' }}>Most Popular</div>}
-            <div className="flex items-start justify-between mb-1">
-              <div className="text-[16px] font-bold" style={{ color:plan.featured?'var(--teal)':'var(--text)' }}>{plan.name}</div>
-              <span className="text-[10px] px-2 py-0.5 rounded font-semibold"
-                style={{ background:`${plan.badgeColor}1a`, color:plan.badgeColor }}>{plan.badge}</span>
-            </div>
-            <div className="font-mono text-[28px] font-bold mt-2">${plan.price.toLocaleString()}</div>
-            <div className="text-[11px] mb-2" style={{ color:'var(--text2)' }}>/month</div>
-            <div className="text-[12px] mb-4 leading-relaxed" style={{ color:'var(--text2)' }}>{plan.desc}</div>
-            <ul className="mb-5 space-y-2">
-              {plan.features.map((f,i) => (
-                <li key={i} className="flex items-center gap-2 text-[12px]" style={{ color:f.on?'var(--text)':'var(--text3)' }}>
-                  <span className="w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0"
-                    style={{ background:f.on?'var(--teal-dim)':'var(--bg4)' }}>
-                    {f.on ? <Check size={8} color="var(--teal)" /> : <X size={8} color="var(--text3)" />}
-                  </span>
-                  {f.l}
-                </li>
-              ))}
-            </ul>
-            <button className="w-full py-2.5 rounded-lg border text-[13px] font-medium transition-all"
-              style={plan.current ? { background:'var(--teal-dim)', borderColor:'var(--teal-dim2)', color:'var(--teal)' }
-                : plan.featured ? { background:'var(--teal)', borderColor:'var(--teal)', color:'#001a12', fontWeight:600 }
-                : { background:'var(--bg3)', borderColor:'var(--border2)', color:'var(--text)' }}
-              disabled={plan.current}>{plan.cta}</button>
+          )
+        })}
+      </div>
+
+      {/* Current plan info */}
+      {currentPlan && (
+        <div className="rounded-xl border p-5" style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
+          <div className="text-[14px] font-semibold mb-1">Current subscription</div>
+          <div className="text-[13px]" style={{ color: 'var(--text2)' }}>
+            You are on the <span className="font-semibold capitalize" style={{ color: 'var(--teal)' }}>{currentPlan}</span> plan.
+            To manage your subscription, invoices or cancel, use the billing portal.
           </div>
-        ))}
-      </div>
-      <div className="text-[15px] font-semibold mb-3.5">Payment History</div>
-      <div className="rounded-xl border overflow-hidden" style={{ borderColor:'var(--border)', background:'var(--bg2)' }}>
-        <table className="w-full border-collapse text-[13px]">
-          <thead><tr style={{ borderBottom:'1px solid var(--border)' }}>
-            {['Date','Description','Amount','Status',''].map(col => (
-              <th key={col} className="text-left px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.5px]" style={{ color:'var(--text2)' }}>{col}</th>
-            ))}
-          </tr></thead>
-          <tbody>
-            {[{date:'Mar 22, 2026',desc:'Pro Plan — Monthly',amount:'$499.00'},{date:'Feb 22, 2026',desc:'Pro Plan — Monthly',amount:'$499.00'},{date:'Jan 22, 2026',desc:'Pro Plan — Monthly',amount:'$499.00'}].map((row,i) => (
-              <tr key={i} className="border-b" style={{ borderColor:'var(--border)' }}>
-                <td className="px-4 py-3" style={{ color:'var(--text2)' }}>{row.date}</td>
-                <td className="px-4 py-3">{row.desc}</td>
-                <td className="px-4 py-3 font-mono">{row.amount}</td>
-                <td className="px-4 py-3"><span className="text-[11px] font-semibold px-2 py-0.5 rounded"
-                  style={{ background:'rgba(0,212,160,0.1)', color:'var(--teal)' }}>Paid</span></td>
-                <td className="px-4 py-3"><Button size="sm">Download</Button></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          <button
+            onClick={async () => {
+              // Portal redirect would go here with customerId
+              alert('Billing portal coming soon — contact support to manage your subscription.')
+            }}
+            className="mt-3 text-[12px] px-4 py-2 rounded-lg border transition-colors"
+            style={{ borderColor: 'var(--border2)', color: 'var(--text2)' }}>
+            Manage subscription →
+          </button>
+        </div>
+      )}
     </>
   )
 }
