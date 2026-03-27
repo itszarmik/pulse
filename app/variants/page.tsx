@@ -1,162 +1,154 @@
 'use client'
 import { useState } from 'react'
-import { PageHeader, Button, Card, Spinner } from '@/components/ui'
-import type { AdVariant } from '@/types'
+import { PageHeader, Button, Spinner } from '@/components/ui'
+import { usePlan } from '@/hooks/usePlan'
+import Link from 'next/link'
 
-const ANGLE_COLORS: Record<string, string> = {
-  'benefit': 'var(--teal)', 'pain-point': 'var(--danger)',
-  'social-proof': 'var(--purple)', 'curiosity': 'var(--warn)', 'direct-offer': '#60a5fa',
-}
+const PLATFORMS = ['Meta', 'Google', 'TikTok', 'LinkedIn']
+const OBJECTIVES = ['Brand awareness', 'Lead generation', 'Conversions', 'Retargeting']
 
-function ScoreBar({ label, value, color = 'var(--teal)' }: { label: string; value: number; color?: string }) {
+function UpgradeWall() {
   return (
-    <div className="flex items-center gap-2 mt-1.5">
-      <span className="text-[10px] w-[68px] shrink-0" style={{ color:'var(--text3)' }}>{label}</span>
-      <div className="flex-1 h-1 rounded-full" style={{ background:'var(--bg4)' }}>
-        <div className="h-full rounded-full transition-all duration-700" style={{ width:`${value}%`, background:color }} />
+    <div className="flex flex-col items-center justify-center py-24 px-8 text-center">
+      <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
+        style={{ background: 'var(--teal-dim)', border: '1px solid rgba(0,212,160,0.2)' }}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="11" width="18" height="11" rx="2" stroke="var(--teal)" strokeWidth="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="var(--teal)" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
       </div>
-      <span className="text-[10px] w-7 text-right" style={{ color:'var(--text2)' }}>{value}%</span>
-    </div>
-  )
-}
-
-function VariantCard({ variant, index }: { variant: AdVariant & { angle?: string }; index: number }) {
-  const [copied, setCopied] = useState(false)
-  const accentColor = ANGLE_COLORS[variant.angle || ''] || 'var(--teal)'
-  const handleCopy = () => {
-    navigator.clipboard.writeText(`Headline: ${variant.headline}\n\nBody: ${variant.body}\n\nCTA: ${variant.cta}`)
-    setCopied(true); setTimeout(() => setCopied(false), 1800)
-  }
-  return (
-    <div className="rounded-xl border p-4 transition-colors hover:border-[var(--border2)]"
-      style={{ background:'var(--bg3)', borderColor:'var(--border)' }}>
-      <div className="flex items-start justify-between mb-1.5">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-[0.5px]" style={{ color:accentColor }}>Variant {index+1}</span>
-          {variant.angle && <span className="text-[10px] px-1.5 py-[2px] rounded font-medium"
-            style={{ background:`${accentColor}1a`, color:accentColor }}>{variant.angle}</span>}
-        </div>
-        <button onClick={handleCopy} className="text-[11px] transition-colors"
-          style={{ color:copied?'var(--teal)':'var(--text3)' }}>{copied?'✓ Copied':'Copy'}</button>
-      </div>
-      <div className="text-[14px] font-semibold mb-1.5">{variant.headline}</div>
-      <div className="text-[12px] leading-relaxed mb-2.5" style={{ color:'var(--text2)' }}>{variant.body}</div>
-      <span className="inline-block text-[11px] font-semibold px-2 py-1 rounded"
-        style={{ background:`${accentColor}1a`, color:accentColor }}>{variant.cta}</span>
-      {variant.imageDirection && (
-        <div className="mt-3 pt-3 border-t text-[11px]" style={{ borderColor:'var(--border)', color:'var(--text2)' }}>
-          <span style={{ color:'var(--text3)' }}>📸 Image: </span>{variant.imageDirection}
-        </div>
-      )}
-      <div className="mt-3 pt-3 border-t" style={{ borderColor:'var(--border)' }}>
-        <ScoreBar label="Engagement" value={variant.engagementScore} />
-        <ScoreBar label="Clarity" value={variant.clarityScore} color="var(--purple)" />
-        <ScoreBar label="Hook" value={variant.hookScore} color="var(--warn)" />
+      <h2 className="text-[22px] font-bold mb-2">Pro Feature</h2>
+      <p className="text-[14px] max-w-sm mb-6" style={{ color: 'var(--text2)' }}>
+        The Ad Variant Generator is available on the Pro and Agency plans. Upgrade to generate AI-powered ad copy variants.
+      </p>
+      <div className="flex gap-3">
+        <Link href="/billing" className="px-6 py-2.5 rounded-lg text-[13px] font-semibold no-underline"
+          style={{ background: 'var(--teal)', color: '#001a12' }}>
+          Upgrade to Pro
+        </Link>
+        <Link href="/" className="px-6 py-2.5 rounded-lg text-[13px] font-medium no-underline border"
+          style={{ borderColor: 'var(--border2)', color: 'var(--text2)' }}>
+          Back to Dashboard
+        </Link>
       </div>
     </div>
   )
 }
 
 export default function VariantsPage() {
-  const [adCopy, setAdCopy] = useState('')
-  const [imageConcept, setImageConcept] = useState('')
+  const { plan, loading, hasAccess } = usePlan()
+  const [platform, setPlatform] = useState('Meta')
+  const [objective, setObjective] = useState('Conversions')
   const [product, setProduct] = useState('')
-  const [campaignGoal, setCampaignGoal] = useState('conversions')
-  const [loading, setLoading] = useState(false)
-  const [variants, setVariants] = useState<(AdVariant & { angle?: string })[]>([])
-  const [error, setError] = useState('')
+  const [audience, setAudience] = useState('')
+  const [tone, setTone] = useState('Professional')
+  const [generating, setGenerating] = useState(false)
+  const [variants, setVariants] = useState([])
+  const [copied, setCopied] = useState(null)
+
+  if (loading) return (
+    <div className="flex items-center justify-center py-24 gap-3" style={{ color: 'var(--text2)' }}>
+      <Spinner /><span>Loading...</span>
+    </div>
+  )
+
+  if (!hasAccess('pro')) return (
+    <>
+      <PageHeader title="Ad Variant Generator" subtitle="Generate AI-powered ad copy variants tested across platforms." />
+      <UpgradeWall />
+    </>
+  )
 
   const handleGenerate = async () => {
-    setLoading(true); setError(''); setVariants([])
+    if (!product.trim()) return
+    setGenerating(true); setVariants([])
     try {
       const res = await fetch('/api/variants', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ adCopy, imageConceptDescription:imageConcept, product, campaignGoal }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ platform, objective, product, audience, tone }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Generation failed')
-      setVariants(data.variants)
-    } catch (e: any) { setError(e.message) }
-    finally { setLoading(false) }
+      setVariants(data.variants || [])
+    } catch (err) { console.error(err) }
+    finally { setGenerating(false) }
   }
 
-  const inputClass = "w-full rounded-lg border px-3 py-2.5 text-[13px] outline-none transition-colors focus:border-[var(--teal)] resize-none"
-  const inputStyle = { background:'var(--bg3)', borderColor:'var(--border)', color:'var(--text)' }
+  const handleCopy = (text, i) => {
+    navigator.clipboard.writeText(text)
+    setCopied(i); setTimeout(() => setCopied(null), 2000)
+  }
+
+  const inputStyle = { background: 'var(--bg3)', borderColor: 'var(--border)', color: 'var(--text)' }
 
   return (
     <>
-      <PageHeader title="Ad Variant Generator" subtitle="Generate AI-powered ad copy variants with headlines, body text, CTAs, and image direction suggestions.">
-        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-[12px] font-semibold"
-          style={{ color:'var(--teal)', background:'var(--teal-dim)', borderColor:'var(--teal-dim2)' }}>
-          <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-            <path d="M7 1L8.5 5.5H13L9.5 8.5L11 13L7 10L3 13L4.5 8.5L1 5.5H5.5L7 1Z" fill="currentColor" />
-          </svg>
-          AI-Powered
+      <PageHeader title="Ad Variant Generator" subtitle="Generate AI-powered ad copy variants tested across platforms.">
+        <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full border"
+          style={{ color: 'var(--teal)', background: 'var(--teal-dim)', borderColor: 'rgba(0,212,160,0.3)' }}>
+          Pro Plan
         </span>
       </PageHeader>
-      <div className="grid grid-cols-2 gap-5">
-        <Card>
-          <div className="flex items-center gap-2 mb-4 text-[13px] font-semibold">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M3 7h8M3 4h5M3 10h6" stroke="var(--teal)" strokeWidth="1.3" strokeLinecap="round" />
-            </svg>
-            Input Your Ad
-          </div>
-          <div className="mb-4">
-            <label className="block text-[12px] font-medium mb-1.5" style={{ color:'var(--text2)' }}>Current Ad Copy</label>
-            <textarea rows={5} value={adCopy} onChange={e => setAdCopy(e.target.value)}
-              placeholder="Paste your existing ad copy here — headline, body, and CTA..." className={inputClass} style={inputStyle} />
-          </div>
-          <div className="mb-4">
-            <label className="block text-[12px] font-medium mb-1.5" style={{ color:'var(--text2)' }}>Product / Offer</label>
-            <input type="text" value={product} onChange={e => setProduct(e.target.value)}
-              placeholder="e.g. SaaS tool for marketers, 14-day free trial" className={inputClass} style={inputStyle} />
-          </div>
-          <div className="mb-4">
-            <label className="block text-[12px] font-medium mb-1.5" style={{ color:'var(--text2)' }}>Image Concept Description</label>
-            <textarea rows={3} value={imageConcept} onChange={e => setImageConcept(e.target.value)}
-              placeholder="Describe the visual concept..." className={inputClass} style={inputStyle} />
-          </div>
-          <div className="mb-5">
-            <label className="block text-[12px] font-medium mb-1.5" style={{ color:'var(--text2)' }}>Campaign Goal</label>
-            <select value={campaignGoal} onChange={e => setCampaignGoal(e.target.value)}
-              className="w-full rounded-lg border px-3 py-2.5 text-[13px] outline-none focus:border-[var(--teal)]" style={inputStyle}>
-              <option value="conversions">Conversions / Sales</option>
-              <option value="leads">Lead Generation</option>
-              <option value="traffic">Traffic / Clicks</option>
-              <option value="awareness">Brand Awareness</option>
-              <option value="retargeting">Retargeting</option>
-            </select>
-          </div>
-          <Button variant="primary" className="w-full justify-center py-3" onClick={handleGenerate} disabled={loading}>
-            {loading ? <><Spinner size={14} /> Generating variants...</> : <>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M7 1L8.5 5.5H13L9.5 8.5L11 13L7 10L3 13L4.5 8.5L1 5.5H5.5L7 1Z" fill="currentColor" />
-              </svg>
-              Generate 5 Variants
-            </>}
-          </Button>
-        </Card>
-        <div>
-          {loading && <div className="flex items-center gap-3 p-5 text-[13px]" style={{ color:'var(--text2)' }}>
-            <Spinner /><span>Generating AI-powered variants…</span>
-          </div>}
-          {error && <div className="rounded-xl border p-4 text-[13px]"
-            style={{ borderColor:'var(--danger)', background:'rgba(255,92,92,0.06)', color:'var(--danger)' }}>{error}</div>}
-          {!loading && variants.length === 0 && !error && (
-            <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-center" style={{ color:'var(--text3)' }}>
-              <svg width="44" height="44" viewBox="0 0 44 44" fill="none" className="mb-3 opacity-30">
-                <rect x="8" y="8" width="28" height="28" rx="3" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M14 18h16M14 22h10M14 26h13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-              <p className="text-[13px]">Fill in the form and click Generate<br />to create AI-powered ad variants</p>
+      <div className="grid grid-cols-[360px_1fr] gap-6">
+        <div className="rounded-xl border p-5" style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
+          <div className="text-[13px] font-semibold mb-4">Campaign brief</div>
+          <div className="flex flex-col gap-3.5">
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: 'var(--text2)' }}>Platform</label>
+              <select value={platform} onChange={e => setPlatform(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-[12px] outline-none" style={inputStyle}>
+                {PLATFORMS.map(p => <option key={p}>{p}</option>)}
+              </select>
             </div>
-          )}
-          {variants.length > 0 && (
-            <div className="flex flex-col gap-3">
-              {variants.map((v, i) => <VariantCard key={i} variant={v} index={i} />)}
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: 'var(--text2)' }}>Objective</label>
+              <select value={objective} onChange={e => setObjective(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-[12px] outline-none" style={inputStyle}>
+                {OBJECTIVES.map(o => <option key={o}>{o}</option>)}
+              </select>
             </div>
-          )}
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: 'var(--text2)' }}>Product / Service *</label>
+              <input type="text" value={product} onChange={e => setProduct(e.target.value)} placeholder="e.g. Running shoes"
+                className="w-full rounded-lg border px-3 py-2 text-[12px] outline-none focus:border-[var(--teal)]" style={inputStyle} />
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: 'var(--text2)' }}>Target Audience</label>
+              <input type="text" value={audience} onChange={e => setAudience(e.target.value)} placeholder="e.g. Men 25-40, fitness enthusiasts"
+                className="w-full rounded-lg border px-3 py-2 text-[12px] outline-none focus:border-[var(--teal)]" style={inputStyle} />
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: 'var(--text2)' }}>Tone</label>
+              <select value={tone} onChange={e => setTone(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-[12px] outline-none" style={inputStyle}>
+                {['Professional', 'Casual', 'Urgent', 'Playful', 'Inspirational'].map(t => <option key={t}>{t}</option>)}
+              </select>
+            </div>
+            <Button variant="primary" onClick={handleGenerate} disabled={generating || !product.trim()}>
+              {generating ? 'Generating...' : 'Generate 5 Variants'}
+            </Button>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          {generating && <div className="flex items-center justify-center py-16 gap-3" style={{ color: 'var(--text2)' }}><Spinner /><span>Claude is writing your variants...</span></div>}
+          {!generating && variants.length === 0 && <div className="flex flex-col items-center justify-center py-16" style={{ color: 'var(--text3)' }}><div className="text-[32px] mb-3">✨</div><p className="text-[13px]">Fill in your brief and click Generate</p></div>}
+          {variants.map((v, i) => (
+            <div key={i} className="rounded-xl border p-4" style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex gap-2">
+                  <span className="text-[11px] px-2 py-0.5 rounded" style={{ background: 'var(--bg4)', color: 'var(--text2)' }}>Variant {i+1}</span>
+                  {v.score && <span className="text-[11px] px-2 py-0.5 rounded font-semibold"
+                    style={{ background: v.score >= 8 ? 'rgba(0,212,160,0.1)' : 'rgba(255,170,68,0.1)', color: v.score >= 8 ? 'var(--teal)' : 'var(--warn)' }}>
+                    {v.score}/10
+                  </span>}
+                </div>
+                <button onClick={() => handleCopy(v.body || v.copy || v.text || '', i)}
+                  className="text-[11px] px-2.5 py-1 rounded border" style={{ borderColor: 'var(--border2)', color: copied === i ? 'var(--teal)' : 'var(--text2)' }}>
+                  {copied === i ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+              {v.headline && <div className="text-[13px] font-semibold mb-1">{v.headline}</div>}
+              <p className="text-[12px] leading-relaxed" style={{ color: 'var(--text2)' }}>{v.body || v.copy || v.text}</p>
+              {v.cta && <div className="mt-2 text-[11px] font-medium" style={{ color: 'var(--teal)' }}>CTA: {v.cta}</div>}
+            </div>
+          ))}
         </div>
       </div>
     </>
