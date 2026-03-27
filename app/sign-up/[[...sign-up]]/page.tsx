@@ -4,6 +4,7 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
       <SignUp
+        afterSignUpUrl="/onboarding"
         appearance={{
           variables: {
             colorPrimary: '#00d4a0',
