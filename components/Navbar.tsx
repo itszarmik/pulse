@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useUser, UserButton, SignInButton } from '@clerk/nextjs'
+import { usePlan } from '@/hooks/usePlan'
 import clsx from 'clsx'
 
 const NAV_LINKS = [
@@ -13,15 +14,16 @@ const NAV_LINKS = [
   { href: '/settings', label: 'Settings' },
 ]
 
+const PLAN_LABELS = { free: 'Free', starter: 'Starter', pro: 'Pro', agency: 'Agency' }
+
 export function Navbar() {
   const pathname = usePathname()
   const { isSignedIn } = useUser()
+  const { plan } = usePlan()
 
   return (
-    <nav
-      className="sticky top-0 z-50 flex items-center gap-1 px-7 h-[52px] border-b"
-      style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}
-    >
+    <nav className="sticky top-0 z-50 flex items-center gap-1 px-7 h-[52px] border-b"
+      style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
       <Link href="/" className="flex items-center gap-2 mr-7 no-underline">
         <div className="w-7 h-7 rounded-[7px] flex items-center justify-center flex-shrink-0" style={{ background: 'var(--teal)' }}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -36,10 +38,8 @@ export function Navbar() {
         const active = pathname === href
         return (
           <Link key={href} href={href}
-            className={clsx(
-              'px-3 py-1.5 rounded-md text-[13px] font-medium transition-all no-underline',
-              active ? 'text-[var(--teal)] bg-[var(--teal-dim)]' : 'text-[var(--text2)] hover:text-[var(--text)] hover:bg-[var(--bg3)]'
-            )}>
+            className={clsx('px-3 py-1.5 rounded-md text-[13px] font-medium transition-all no-underline',
+              active ? 'text-[var(--teal)] bg-[var(--teal-dim)]' : 'text-[var(--text2)] hover:text-[var(--text)] hover:bg-[var(--bg3)]')}>
             {label}
           </Link>
         )
@@ -48,22 +48,22 @@ export function Navbar() {
       <div className="ml-auto flex items-center gap-2.5">
         {isSignedIn ? (
           <>
-            <span className="text-[11px] font-semibold px-2.5 py-[3px] rounded-full border"
+            <Link href="/billing"
+              className="text-[11px] font-semibold px-2.5 py-[3px] rounded-full border no-underline hover:opacity-80"
               style={{ color: 'var(--teal)', background: 'var(--teal-dim)', borderColor: 'var(--teal-dim2)' }}>
-              Pro Plan
-            </span>
+              {PLAN_LABELS[plan] || 'Free'} Plan
+            </Link>
             <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: 'w-8 h-8' } }} />
           </>
         ) : (
           <>
             <SignInButton mode="modal">
-              <button className="px-3 py-1.5 rounded-[7px] text-[13px] font-medium transition-colors border"
+              <button className="px-3 py-1.5 rounded-[7px] text-[13px] font-medium border"
                 style={{ borderColor: 'var(--border2)', color: 'var(--text2)', background: 'transparent' }}>
                 Log In
               </button>
             </SignInButton>
-            <Link href="/sign-up"
-              className="px-4 py-1.5 rounded-[7px] text-[13px] font-semibold no-underline"
+            <Link href="/sign-up" className="px-4 py-1.5 rounded-[7px] text-[13px] font-semibold no-underline"
               style={{ background: 'var(--teal)', color: '#001a12' }}>
               Get Started
             </Link>
