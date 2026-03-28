@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { href: '/creative', label: 'Creative' },
   { href: '/variants', label: 'Variants' },
   { href: '/ugc', label: 'UGC' },
+  { href: '/reports', label: 'Reports' },
   { href: '/alerts', label: 'Alerts' },
   { href: '/accounts', label: 'Accounts' },
   { href: '/billing', label: 'Billing' },
@@ -26,7 +27,7 @@ export function Navbar() {
   const { plan } = usePlan()
 
   return (
-    <nav className="sticky top-0 z-50 flex items-center gap-0.5 px-5 h-[52px] border-b"
+    <nav className="sticky top-0 z-50 flex items-center gap-0.5 px-5 h-[52px] border-b overflow-x-auto"
       style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
       <Link href="/" className="flex items-center gap-2 mr-4 no-underline shrink-0">
         <div className="w-7 h-7 rounded-[7px] flex items-center justify-center" style={{ background: 'var(--teal)' }}>
@@ -42,18 +43,18 @@ export function Navbar() {
         const active = pathname === href
         return (
           <Link key={href} href={href}
-            className={clsx('px-2 py-1.5 rounded-md text-[11px] font-medium transition-all no-underline whitespace-nowrap',
+            className={clsx('px-2 py-1.5 rounded-md text-[11px] font-medium transition-all no-underline whitespace-nowrap shrink-0',
               active ? 'text-[var(--teal)] bg-[var(--teal-dim)]' : 'text-[var(--text2)] hover:text-[var(--text)] hover:bg-[var(--bg3)]')}>
             {label}
           </Link>
         )
       })}
 
-      <div className="ml-auto flex items-center gap-2 shrink-0 pl-2">
+      <div className="ml-auto flex items-center gap-2 shrink-0 pl-3">
         {isSignedIn ? (
           <>
             <Link href="/billing"
-              className="text-[10px] font-semibold px-2 py-[3px] rounded-full border no-underline hover:opacity-80 whitespace-nowrap"
+              className="text-[10px] font-semibold px-2 py-[3px] rounded-full border no-underline hover:opacity-80 whitespace-nowrap shrink-0"
               style={{ color: 'var(--teal)', background: 'var(--teal-dim)', borderColor: 'var(--teal-dim2)' }}>
               {PLAN_LABELS[plan] || 'Free'}
             </Link>
