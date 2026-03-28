@@ -7,40 +7,31 @@ export async function POST(req: NextRequest) {
   try {
     const { campaigns, product, audience, industry } = await req.json()
 
-    const totalSpend = campaigns.reduce((s: number, c: any) => s + c.spend, 0)
-    const totalRevenue = campaigns.reduce((s: number, c: any) => s + c.revenue, 0)
+    const campSummary = campaigns.map((c: any) => ({
+      name: c.name, platform: c.platform,
+      roas: c.roas, ctr: c.ctr, cpc: c.cpc,
+      spend: c.spend, revenue: c.revenue,
+      conversions: c.conversions, clicks: c.clicks,
+      cvr: c.clicks > 0 ? ((c.conversions / c.clicks) * 100).toFixed(1) : 0,
+    }))
 
-    const prompt = `You are a creative strategist and performance marketing expert. Analyse these ad campaigns and return ONLY valid JSON.
+    const prompt = `You are an expert creative strategist. Analyse these ad campaigns and return ONLY valid JSON.
 
-CAMPAIGN DATA:
-${JSON.stringify(campaigns, null, 2)}
+CAMPAIGNS: ${JSON.stringify(campSummary)}
+Product: ${product || 'ecommerce product'}
+Audience: ${audience || 'general consumers'}
+Industry: ${industry || 'ecommerce'}
 
-Product: ${product || 'Not specified'}
-Audience: ${audience || 'Not specified'}
-Industry: ${industry || 'Not specified'}
-Total spend: £${totalSpend.toLocaleString()} | Total revenue: £${totalRevenue.toLocaleString()}
-
-Return ONLY this JSON structure, no other text:
+Return ONLY this JSON:
 {
-  "summary": "2-3 sentence insight on what creative is working and the single biggest opportunity",
-  "topFormats": [
-    { "format": "format name", "platform": "platform", "avgROAS": <number>, "score": <0-100>, "insight": "why working" }
-  ],
-  "winningHooks": [
-    { "hookType": "hook type e.g. Problem/Solution", "example": "example opening line for their product", "ctr": <estimated % number>, "platforms": ["platform"], "why": "reason it converts" }
-  ],
-  "audienceInsights": [
-    { "segment": "audience segment", "performance": "high|medium|low", "cpa": <number>, "cvr": <number>, "insight": "specific actionable insight" }
-  ],
-  "creativeRecommendations": [
-    { "type": "format|hook|angle|cta|length", "recommendation": "specific recommendation", "reason": "data reason", "expectedImpact": "e.g. +15% CTR", "priority": "high|medium|low" }
-  ],
-  "trendingNow": [
-    { "trend": "trend name", "platform": "platform", "relevance": "why relevant", "action": "how to execute" }
-  ]
-}
-
-Use actual numbers from the data. Be specific and actionable. For winningHooks, write example hooks specific to the product/industry provided.`
+  "summary": "2-3 sentences on what creative patterns are working and why",
+  "topFormats": [{"format":"string","score":0,"avgROAS":0,"avgCTR":0,"verdict":"string","platforms":["string"]}],
+  "winningHooks": [{"type":"string","description":"string","example":"string","effectiveness":"high|medium|low","bestFor":"string"}],
+  "messagingInsights": [{"insight":"string","evidence":"string","recommendation":"string"}],
+  "audienceInsights": [{"segment":"string","behaviour":"string","ctr":0,"recommendation":"string"}],
+  "avoidList": [{"pattern":"string","reason":"string","evidence":"string"}],
+  "nextCreativeIdeas": [{"concept":"string","description":"string","platform":"string","expectedROAS":0,"reasoning":"string"}]
+}`
 
     const message = await client.messages.create({
       model: 'claude-opus-4-20250514',
@@ -52,7 +43,6 @@ Use actual numbers from the data. Be specific and actionable. For winningHooks, 
     const clean = text.replace(/```json|```/g, '').trim()
     return NextResponse.json(JSON.parse(clean))
   } catch (err: any) {
-    console.error('Creative intelligence error:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
