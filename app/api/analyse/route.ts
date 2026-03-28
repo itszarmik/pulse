@@ -1,39 +1,58 @@
-import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
+import Anthropic from '@anthropic-ai/sdk'
+import { auth } from '@clerk/nextjs/server'
 
-const client = new Anthropic()
+const anthropic = new Anthropic()
 
 export async function POST(req: NextRequest) {
+  const { userId } = await auth()
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   try {
-    const { campaigns, dateRange } = await req.json()
-    const prompt = `You are a senior paid media analyst with deep expertise in ROAS optimisation across Meta, Google, and TikTok Ads.
+    const body = await req.json()
+    const { type, prompt, campaigns, data, totalSpend, totalRevenue, overallROAS, byPlatform } = body
 
-Analyse the following campaign data and return 3 actionable insights:
+    let systemPrompt = 'You are an expert digital marketing strategist and media buyer with deep expertise in Meta, Google and TikTok advertising.'
+    let userMessage = ''
 
-Date range: ${dateRange || 'Last 30 days'}
-Campaigns:
+    if (type === 'spend_intelligence') {
+      systemPrompt += ' You give highly specific, data-driven budget reallocation recommendations. Always reference exact numbers and percentages.'
+      userMessage = `${prompt}
+
+Campaign data:
 ${JSON.stringify(campaigns, null, 2)}
 
-Return ONLY a valid JSON array of exactly 3 insight objects. Each must have:
-- type: "success" | "warning" | "info"
-- title: string (emoji + short title, max 6 words)
-- body: string (2-3 sentences, specific and actionable with numbers where possible)
-- action: string (one concrete next step, max 10 words)
+Account summary:
+- Total monthly spend: £${totalSpend}
+- Total revenue: £${totalRevenue}
+- Overall ROAS: ${overallROAS}x
+- By platform: ${JSON.stringify(byPlatform, null, 2)}`
 
-Focus on: ROAS performance, budget allocation, creative fatigue, platform efficiency, and quick wins.
-No markdown, no preamble — ONLY the JSON array.`
+    } else if (type === 'ugc') {
+      systemPrompt += ' You specialise in influencer marketing ROI analysis and UGC campaign optimisation.'
+      userMessage = `${prompt}
 
-    const message = await client.messages.create({
+Influencer campaign data:
+${JSON.stringify(data, null, 2)}`
+
+    } else {
+      // Standard campaign analysis
+      userMessage = prompt || `Analyse these campaigns and provide actionable insights:
+${JSON.stringify(data || campaigns, null, 2)}`
+    }
+
+    const message = await anthropic.messages.create({
       model: 'claude-opus-4-5',
-      max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 2000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMessage }],
     })
-    const text = message.content.filter(b => b.type === 'text').map(b => (b as any).text).join('')
-    const clean = text.replace(/```json|```/g, '').trim()
-    const insights = JSON.parse(clean)
-    return NextResponse.json({ insights })
+
+    const analysis = message.content[0].type === 'text' ? message.content[0].text : ''
+    return NextResponse.json({ analysis })
+
   } catch (err: any) {
-    console.error('Analysis error:', err)
-    return NextResponse.json({ error: err.message || 'Failed to analyse campaigns' }, { status: 500 })
+    console.error('Analyse error:', err)
+    return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
