@@ -48,25 +48,25 @@ export function Navbar() {
         )
       })}
 
-      <div className="ml-auto flex items-center gap-2 shrink-0 pl-2">
+      <div className="ml-auto flex items-center gap-2 shrink-0 pl-3">
         {isSignedIn ? (
           <>
             <Link href="/billing"
               className="text-[11px] font-semibold px-2.5 py-[3px] rounded-full border no-underline hover:opacity-80 whitespace-nowrap"
               style={{ color: 'var(--teal)', background: 'var(--teal-dim)', borderColor: 'var(--teal-dim2)' }}>
-              {PLAN_LABELS[plan] || 'Free'} Plan
+              {PLAN_LABELS[plan] || 'Free'}
             </Link>
-            <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: 'w-8 h-8' } }} />
+            <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: 'w-7 h-7' } }} />
           </>
         ) : (
           <>
             <SignInButton mode="modal">
-              <button className="px-3 py-1.5 rounded-[7px] text-[13px] font-medium border whitespace-nowrap"
+              <button className="px-3 py-1.5 rounded-[7px] text-[12px] font-medium border"
                 style={{ borderColor: 'var(--border2)', color: 'var(--text2)', background: 'transparent' }}>
                 Log In
               </button>
             </SignInButton>
-            <Link href="/sign-up" className="px-4 py-1.5 rounded-[7px] text-[13px] font-semibold no-underline whitespace-nowrap"
+            <Link href="/sign-up" className="px-3 py-1.5 rounded-[7px] text-[12px] font-semibold no-underline whitespace-nowrap"
               style={{ background: 'var(--teal)', color: '#001a12' }}>
               Get Started
             </Link>
