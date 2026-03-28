@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useUser, UserButton, SignInButton } from '@clerk/nextjs'
 import { usePlan } from '@/hooks/usePlan'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
 import clsx from 'clsx'
 
 const NAV_LINKS = [
@@ -12,6 +14,7 @@ const NAV_LINKS = [
   { href: '/creative', label: 'Creative' },
   { href: '/variants', label: 'Variants' },
   { href: '/ugc', label: 'UGC' },
+  { href: '/alerts', label: 'Alerts' },
   { href: '/accounts', label: 'Accounts' },
   { href: '/billing', label: 'Billing' },
   { href: '/settings', label: 'Settings' },
@@ -21,8 +24,16 @@ const PLAN_LABELS = { free: 'Free', starter: 'Starter', pro: 'Pro', agency: 'Age
 
 export function Navbar() {
   const pathname = usePathname()
-  const { isSignedIn } = useUser()
+  const { isSignedIn, user } = useUser()
   const { plan } = usePlan()
+  const [unread, setUnread] = useState(0)
+
+  useEffect(() => {
+    if (!user) return
+    supabase.from('alerts').select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id).eq('read', false)
+      .then(({ count }) => setUnread(count || 0))
+  }, [user])
 
   return (
     <nav className="sticky top-0 z-50 flex items-center gap-0.5 px-6 h-[52px] border-b"
@@ -41,9 +52,13 @@ export function Navbar() {
         const active = pathname === href
         return (
           <Link key={href} href={href}
-            className={clsx('px-2 py-1.5 rounded-md text-[12px] font-medium transition-all no-underline whitespace-nowrap',
+            className={clsx('px-2 py-1.5 rounded-md text-[12px] font-medium transition-all no-underline whitespace-nowrap relative',
               active ? 'text-[var(--teal)] bg-[var(--teal-dim)]' : 'text-[var(--text2)] hover:text-[var(--text)] hover:bg-[var(--bg3)]')}>
             {label}
+            {label === 'Alerts' && unread > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full text-[8px] font-bold flex items-center justify-center"
+                style={{ background: 'var(--danger)', color: 'white' }}>{unread > 9 ? '9+' : unread}</span>
+            )}
           </Link>
         )
       })}
