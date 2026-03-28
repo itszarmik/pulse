@@ -25,7 +25,7 @@ export function Navbar() {
   const { plan } = usePlan()
 
   return (
-    <nav className="sticky top-0 z-50 flex items-center gap-0.5 px-5 h-[52px] border-b"
+    <nav className="sticky top-0 z-50 flex items-center gap-0.5 px-6 h-[52px] border-b"
       style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
       <Link href="/" className="flex items-center gap-2 mr-4 no-underline shrink-0">
         <div className="w-7 h-7 rounded-[7px] flex items-center justify-center" style={{ background: 'var(--teal)' }}>
@@ -48,20 +48,20 @@ export function Navbar() {
         )
       })}
 
-      <div className="ml-auto flex items-center gap-2 shrink-0 pl-3">
+      <div className="ml-auto flex items-center gap-2 shrink-0 pl-2">
         {isSignedIn ? (
           <>
             <Link href="/billing"
               className="text-[11px] font-semibold px-2.5 py-[3px] rounded-full border no-underline hover:opacity-80 whitespace-nowrap"
               style={{ color: 'var(--teal)', background: 'var(--teal-dim)', borderColor: 'var(--teal-dim2)' }}>
-              {PLAN_LABELS[plan] || 'Free'}
+              {PLAN_LABELS[plan] || 'Free'} Plan
             </Link>
-            <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: 'w-7 h-7' } }} />
+            <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: 'w-8 h-8' } }} />
           </>
         ) : (
           <>
             <SignInButton mode="modal">
-              <button className="px-3 py-1.5 rounded-[7px] text-[12px] font-medium border"
+              <button className="px-3 py-1.5 rounded-[7px] text-[12px] font-medium border whitespace-nowrap"
                 style={{ borderColor: 'var(--border2)', color: 'var(--text2)', background: 'transparent' }}>
                 Log In
               </button>
