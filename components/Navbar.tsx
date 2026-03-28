@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: '/', label: 'Dashboard' },
   { href: '/import', label: 'Import' },
   { href: '/variants', label: 'Variants' },
+  { href: '/ugc', label: 'UGC' },
   { href: '/accounts', label: 'Accounts' },
   { href: '/billing', label: 'Billing' },
   { href: '/settings', label: 'Settings' },
@@ -24,11 +25,11 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 flex items-center gap-1 px-7 h-[52px] border-b"
       style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
-      <Link href="/" className="flex items-center gap-2 mr-7 no-underline">
+      <Link href="/" className="flex items-center gap-2 mr-6 no-underline">
         <div className="w-7 h-7 rounded-[7px] flex items-center justify-center flex-shrink-0" style={{ background: 'var(--teal)' }}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M2 8L8 2L14 8L8 14L2 8Z" fill="white" />
-            <path d="M5 8L8 5L11 8L8 11L5 8Z" fill="#0d0f14" />
+            <path d="M2 8L8 2L14 8L8 14L2 8Z" fill="white"/>
+            <path d="M5 8L8 5L11 8L8 11L5 8Z" fill="#0d0f14"/>
           </svg>
         </div>
         <span className="font-mono font-bold text-[15px]" style={{ color: 'var(--text)' }}>Pulse</span>
