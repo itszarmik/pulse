@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: '/variants', label: 'Variants' },
   { href: '/ugc', label: 'UGC' },
   { href: '/accounts', label: 'Accounts' },
+  { href: '/ugc', label: 'UGC' },
   { href: '/billing', label: 'Billing' },
   { href: '/settings', label: 'Settings' },
 ]
