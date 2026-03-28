@@ -5,55 +5,54 @@ const client = new Anthropic()
 
 export async function POST(req: NextRequest) {
   try {
-    const { campaigns, industry, product, audience } = await req.json()
+    const { campaigns, product, audience, industry } = await req.json()
 
-    const prompt = `You are an expert creative strategist. Analyse these ad campaigns and return ONLY valid JSON.
+    const totalSpend = campaigns.reduce((s: number, c: any) => s + c.spend, 0)
+    const totalRevenue = campaigns.reduce((s: number, c: any) => s + c.revenue, 0)
 
-CAMPAIGNS:
+    const prompt = `You are a creative strategist and performance marketing expert. Analyse these ad campaigns and return ONLY valid JSON.
+
+CAMPAIGN DATA:
 ${JSON.stringify(campaigns, null, 2)}
 
-Industry: ${industry || 'E-commerce'}
-Product: ${product || 'General products'}
-Audience: ${audience || 'General consumers'}
+Product: ${product || 'Not specified'}
+Audience: ${audience || 'Not specified'}
+Industry: ${industry || 'Not specified'}
+Total spend: £${totalSpend.toLocaleString()} | Total revenue: £${totalRevenue.toLocaleString()}
 
-Return ONLY this JSON, no other text:
+Return ONLY this JSON structure, no other text:
 {
+  "summary": "2-3 sentence insight on what creative is working and the single biggest opportunity",
   "topFormats": [
-    { "format": "string", "performanceScore": <1-10>, "avgROAS": <number>, "whyItWorks": "string", "recommendation": "string" }
+    { "format": "format name", "platform": "platform", "avgROAS": <number>, "score": <0-100>, "insight": "why working" }
   ],
   "winningHooks": [
-    { "hookType": "string", "effectiveness": <1-10>, "example": "string", "audienceMatch": "string" }
+    { "hookType": "hook type e.g. Problem/Solution", "example": "example opening line for their product", "ctr": <estimated % number>, "platforms": ["platform"], "why": "reason it converts" }
   ],
-  "topTones": [
-    { "tone": "string", "conversionRate": <number>, "bestFor": "string", "sampleCopy": "string" }
+  "audienceInsights": [
+    { "segment": "audience segment", "performance": "high|medium|low", "cpa": <number>, "cvr": <number>, "insight": "specific actionable insight" }
   ],
-  "audienceInsights": {
-    "bestConvertingSegment": "string",
-    "peakEngagementTime": "string",
-    "platformPreference": "string",
-    "contentConsumption": "string"
-  },
-  "creativeFatigue": {
-    "status": "Fresh|Warning|Fatigued",
-    "message": "string",
-    "recommendation": "string"
-  },
-  "topRecommendation": "string",
-  "nextCreativeTests": ["string", "string", "string"]
+  "creativeRecommendations": [
+    { "type": "format|hook|angle|cta|length", "recommendation": "specific recommendation", "reason": "data reason", "expectedImpact": "e.g. +15% CTR", "priority": "high|medium|low" }
+  ],
+  "trendingNow": [
+    { "trend": "trend name", "platform": "platform", "relevance": "why relevant", "action": "how to execute" }
+  ]
 }
 
-Be specific with numbers from the actual campaign data.`
+Use actual numbers from the data. Be specific and actionable. For winningHooks, write example hooks specific to the product/industry provided.`
 
     const message = await client.messages.create({
       model: 'claude-opus-4-20250514',
-      max_tokens: 2000,
+      max_tokens: 2500,
       messages: [{ role: 'user', content: prompt }],
     })
 
     const text = message.content[0].type === 'text' ? message.content[0].text : ''
-    const clean = text.replace(/```json|\n```|```/g, '').trim()
+    const clean = text.replace(/```json|```/g, '').trim()
     return NextResponse.json(JSON.parse(clean))
   } catch (err: any) {
+    console.error('Creative intelligence error:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
