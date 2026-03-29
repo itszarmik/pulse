@@ -7,7 +7,7 @@ import clsx from 'clsx'
 
 const NAV_LINKS = [
   { href: '/', label: 'Dashboard' },
-  { href: '/score', label: '⚡ Score' },
+  { href: '/score', label: '⬧ Score' },
   { href: '/import', label: 'Import' },
   { href: '/spend', label: 'AI Spend' },
   { href: '/creative', label: 'Creative' },
@@ -48,9 +48,7 @@ export function Navbar() {
         return (
           <Link key={href} href={href}
             className={clsx('px-2 py-1 rounded-md text-[11px] font-medium transition-all no-underline whitespace-nowrap shrink-0',
-              active
-                ? isScore ? 'bg-[var(--teal)] text-[#001a12]' : 'text-[var(--teal)] bg-[var(--teal-dim)]'
-                : isScore ? 'text-[var(--teal)] bg-[var(--teal-dim)] hover:bg-[var(--teal)] hover:text-[#001a12]' : 'text-[var(--text2)] hover:text-[var(--text)] hover:bg-[var(--bg3)]')}>
+              active ? 'text-[var(--teal)] bg-[var(--teal-dim)]' : isScore ? 'text-[var(--teal)] hover:bg-[var(--teal-dim)]' : 'text-[var(--text2)] hover:text-[var(--text)] hover:bg-[var(--bg3)]')}>
             {label}
           </Link>
         )
