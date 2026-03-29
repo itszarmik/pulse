@@ -15,6 +15,7 @@ const NAV_LINKS = [
   { href: '/calculator', label: 'Calculator' },
   { href: '/reports', label: 'Reports' },
   { href: '/alerts', label: 'Alerts' },
+  { href: '/integrations', label: 'Integrations' },
   { href: '/accounts', label: 'Accounts' },
   { href: '/billing', label: 'Billing' },
   { href: '/settings', label: 'Settings' },
@@ -28,8 +29,8 @@ export function Navbar() {
   const { plan } = usePlan()
 
   return (
-    <nav className="sticky top-0 z-50 flex items-center gap-0.5 px-4 h-[52px] border-b overflow-x-auto scrollbar-hide"
-      style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
+    <nav className="sticky top-0 z-50 flex items-center gap-0.5 px-4 h-[52px] border-b overflow-x-auto"
+      style={{ background: 'var(--bg2)', borderColor: 'var(--border)', scrollbarWidth: 'none' }}>
       <Link href="/" className="flex items-center gap-1.5 mr-4 no-underline shrink-0">
         <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ background: 'var(--teal)' }}>
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
