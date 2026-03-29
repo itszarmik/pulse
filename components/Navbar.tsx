@@ -12,9 +12,9 @@ const NAV_LINKS = [
   { href: '/creative', label: 'Creative' },
   { href: '/variants', label: 'Variants' },
   { href: '/ugc', label: 'UGC' },
+  { href: '/calculator', label: 'Calculator' },
   { href: '/reports', label: 'Reports' },
   { href: '/alerts', label: 'Alerts' },
-  { href: '/team', label: 'Team' },
   { href: '/accounts', label: 'Accounts' },
   { href: '/billing', label: 'Billing' },
   { href: '/settings', label: 'Settings' },
@@ -28,23 +28,23 @@ export function Navbar() {
   const { plan } = usePlan()
 
   return (
-    <nav className="sticky top-0 z-50 flex items-center gap-0.5 px-5 h-[52px] border-b overflow-x-auto"
-      style={{ background: 'var(--bg2)', borderColor: 'var(--border)', scrollbarWidth: 'none' }}>
-      <Link href="/" className="flex items-center gap-2 mr-4 no-underline shrink-0">
-        <div className="w-7 h-7 rounded-[7px] flex items-center justify-center" style={{ background: 'var(--teal)' }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <nav className="sticky top-0 z-50 flex items-center gap-0.5 px-4 h-[52px] border-b overflow-x-auto scrollbar-hide"
+      style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
+      <Link href="/" className="flex items-center gap-1.5 mr-4 no-underline shrink-0">
+        <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ background: 'var(--teal)' }}>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
             <path d="M2 8L8 2L14 8L8 14L2 8Z" fill="white"/>
             <path d="M5 8L8 5L11 8L8 11L5 8Z" fill="#0d0f14"/>
           </svg>
         </div>
-        <span className="font-mono font-bold text-[15px]" style={{ color: 'var(--text)' }}>Pulse</span>
+        <span className="font-mono font-bold text-[14px]" style={{ color: 'var(--text)' }}>Pulse</span>
       </Link>
 
       {isSignedIn && NAV_LINKS.map(({ href, label }) => {
         const active = pathname === href
         return (
           <Link key={href} href={href}
-            className={clsx('px-2 py-1.5 rounded-md text-[11px] font-medium transition-all no-underline whitespace-nowrap shrink-0',
+            className={clsx('px-2 py-1 rounded-md text-[11px] font-medium transition-all no-underline whitespace-nowrap shrink-0',
               active ? 'text-[var(--teal)] bg-[var(--teal-dim)]' : 'text-[var(--text2)] hover:text-[var(--text)] hover:bg-[var(--bg3)]')}>
             {label}
           </Link>
