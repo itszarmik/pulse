@@ -11,56 +11,97 @@ export async function POST(req: NextRequest) {
     const symbol = currency === 'GBP' ? '£' : '$'
     const totalSpend = campaigns.reduce((s: number, c: any) => s + c.spend, 0)
     const totalRevenue = campaigns.reduce((s: number, c: any) => s + c.revenue, 0)
+    const blendedROAS = totalSpend > 0 ? totalRevenue / totalSpend : 0
+    const budget = totalBudget || totalSpend
 
-    const prompt = `You are an expert paid media strategist. Analyse these ad campaigns and return ONLY valid JSON.
+    const prompt = `You are the world's best paid media strategist with 15 years experience managing £100M+ in ad spend.
+Analyse these campaigns and return ONLY valid JSON — no markdown, no preamble.
 
-CAMPAIGNS:
+CAMPAIGNS DATA:
 ${JSON.stringify(campaigns, null, 2)}
 
-Total monthly spend: ${symbol}${totalSpend.toLocaleString()}
-Total revenue: ${symbol}${totalRevenue.toLocaleString()}
-Blended ROAS: ${totalSpend > 0 ? (totalRevenue/totalSpend).toFixed(2) : 0}x
-${totalBudget ? `Available budget: ${symbol}${totalBudget.toLocaleString()}` : ''}
+PORTFOLIO SUMMARY:
+- Total monthly spend: ${symbol}${totalSpend.toLocaleString()}
+- Total monthly revenue: ${symbol}${totalRevenue.toLocaleString()}
+- Blended ROAS: ${blendedROAS.toFixed(2)}x
+- Available budget to reallocate: ${symbol}${budget.toLocaleString()}
 
-Return ONLY this JSON structure, no other text:
+ANALYSIS RULES:
+- ROAS < 1.5x = bleeding money, immediate action needed
+- ROAS 1.5–2.5x = underperforming, optimise or cut
+- ROAS 2.5–4x = healthy, maintain
+- ROAS > 4x = star campaign, scale aggressively
+- Always identify the single biggest quick win first
+- Budget reallocation: move FROM low ROAS TO high ROAS
+- Be brutally specific with numbers — reference actual spend/ROAS figures
+- Projected impact must be calculated: (reallocated_spend × target_campaign_roas) - reallocated_spend
+
+Return ONLY this exact JSON:
 {
-  "summary": "2-3 sentence executive summary of the portfolio performance and biggest opportunities",
-  "totalWastedSpend": <number - estimated monthly spend being wasted on underperforming campaigns>,
-  "totalOpportunityGain": <number - estimated additional monthly revenue if recommendations followed>,
+  "summary": "2-3 sentence executive summary with specific numbers",
+  "totalWastedSpend": <number>,
+  "totalOpportunityGain": <number>,
+  "projectedROAS": <number - what blended ROAS would be after all recommendations>,
+  "projectedRevenue": <number - projected monthly revenue after all recommendations>,
+  "confidence": <number 0-100 - how confident you are in these recommendations>,
   "platformInsights": [
-    { "platform": "Meta", "verdict": "one sentence", "score": <0-100 efficiency score> }
+    {
+      "platform": "platform name",
+      "verdict": "one specific sentence with numbers",
+      "score": <0-100>,
+      "spend": <current spend number>,
+      "roas": <current roas number>,
+      "recommendation": "scale|maintain|cut|diversify"
+    }
   ],
   "budgetPlan": [
-    { "from": "campaign name", "to": "campaign name", "amount": <number>, "reason": "brief reason" }
+    {
+      "from": "exact campaign name",
+      "fromPlatform": "platform",
+      "fromCurrentSpend": <number>,
+      "fromCurrentROAS": <number>,
+      "to": "exact campaign name",
+      "toPlatform": "platform",
+      "toCurrentSpend": <number>,
+      "toCurrentROAS": <number>,
+      "amount": <number to move>,
+      "projectedRevenueLift": <number>,
+      "reason": "specific data-driven reason"
+    }
   ],
   "recommendations": [
     {
-      "type": "scale|cut|pause|reallocate|watch",
-      "campaign": "campaign name",
-      "platform": "platform name",
-      "action": "specific action e.g. Increase budget by 40%",
-      "reason": "data-driven reason referencing actual numbers",
-      "impact": "estimated impact e.g. +${symbol}2,400/mo revenue",
-      "priority": "high|medium|low"
+      "type": "scale|cut|pause|reallocate|watch|optimise",
+      "campaign": "exact campaign name",
+      "platform": "platform",
+      "currentSpend": <number>,
+      "currentROAS": <number>,
+      "action": "specific action e.g. Increase budget by £800/month",
+      "reason": "data-driven reason with actual numbers",
+      "impact": "e.g. +${symbol}2,400/mo revenue",
+      "impactValue": <number - the £ value of the impact>,
+      "confidence": <0-100>,
+      "priority": "high|medium|low",
+      "effort": "immediate|this-week|this-month"
     }
-  ]
-}
-
-Rules:
-- Be specific with numbers from the data
-- Flag any campaign with ROAS below 2x as underperforming
-- Identify campaigns with ROAS above 4x as scale candidates
-- Budget reallocation should move money FROM low ROAS TO high ROAS campaigns
-- Sort recommendations by priority (high first)`
+  ],
+  "quickWin": {
+    "title": "single biggest quick win title",
+    "description": "specific description with numbers",
+    "action": "exact action to take",
+    "impact": "projected impact",
+    "impactValue": <number>
+  }
+}`
 
     const message = await client.messages.create({
       model: 'claude-opus-4-20250514',
-      max_tokens: 2000,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     })
 
     const text = message.content[0].type === 'text' ? message.content[0].text : ''
-    const clean = text.replace(/```json|\n```|```/g, '').trim()
+    const clean = text.replace(/```json|```/g, '').trim()
     const result = JSON.parse(clean)
     return NextResponse.json(result)
   } catch (err: any) {
