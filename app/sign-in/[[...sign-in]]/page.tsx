@@ -4,6 +4,8 @@ export default function SignInPage() {
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
       <SignIn
+        afterSignInUrl="/spend"
+        signUpUrl="/sign-up"
         appearance={{
           variables: {
             colorPrimary: '#00d4a0',
