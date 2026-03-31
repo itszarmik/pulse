@@ -390,7 +390,7 @@ export default function SpendPage() {
                         <span className="text-[11px]" style={{color:'var(--text2)'}}>{move.reason}</span>
                         {move.projectedRevenueLift>0 && (
                           <span className="ml-2 text-[11px] font-bold" style={{color:'var(--teal)'}}>
-                            Â· Projected +£{move.projectedRevenueLift?.toLocaleString()}/mo
+                            · Projected +£{move.projectedRevenueLift?.toLocaleString()}/mo
                           </span>
                         )}
                       </div>
@@ -483,7 +483,7 @@ export default function SpendPage() {
                         <div className="rounded-lg p-3 text-[12px]" style={{background:'var(--bg3)'}}>
                           <div className="font-semibold mb-1" style={{color:'var(--text2)'}}>Why this recommendation?</div>
                           <div style={{color:'var(--text2)'}}>{r.reason}</div>
-                          {r.currentROAS&&<div className="mt-1.5 text-[11px]" style={{color:'var(--text3)'}}>Current ROAS: <span className="font-mono">{r.currentROAS?.toFixed(1)}x</span> Â· Current spend: <span className="font-mono">£{r.currentSpend?.toLocaleString()}</span></div>}
+                          {r.currentROAS&&<div className="mt-1.5 text-[11px]" style={{color:'var(--text3)'}}>Current ROAS: <span className="font-mono">{r.currentROAS?.toFixed(1)}x</span> · Current spend: <span className="font-mono">£{r.currentSpend?.toLocaleString()}</span></div>}
                         </div>
                       </div>
                     )}
