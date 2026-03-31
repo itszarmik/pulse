@@ -10,12 +10,16 @@ const isPublicRoute = createRouteMatcher([
   '/invite/(.*)',
 ])
 
+const isAuthPage = createRouteMatcher([
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+])
+
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth()
-  const url = req.nextUrl
 
-  // If signed in and trying to access sign-in or sign-up, redirect to spend
-  if (userId && (url.pathname.startsWith('/sign-in') || url.pathname.startsWith('/sign-up'))) {
+  // Redirect signed-in users away from auth pages
+  if (userId && isAuthPage(req)) {
     return NextResponse.redirect(new URL('/spend', req.url))
   }
 
