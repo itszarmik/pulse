@@ -85,7 +85,7 @@ export function BudgetSimulator({ campaigns }: { campaigns: Campaign[] }) {
             Real-time budget simulator
           </div>
           <p className="text-[11px] mt-0.5" style={{ color:'var(--text3)' }}>
-            Drag the sliders to reallocate budget â projected revenue updates instantly. Total budget stays fixed at Â\u00a3{totalBudget.toLocaleString()}.
+            Drag the sliders to reallocate budget â projected revenue updates instantly. Total budget stays fixed at Â£{totalBudget.toLocaleString()}.
           </p>
         </div>
         <button onClick={reset} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all hover:bg-[var(--bg3)]"
@@ -98,7 +98,7 @@ export function BudgetSimulator({ campaigns }: { campaigns: Campaign[] }) {
       <div className="grid grid-cols-3 gap-3 mb-6 mt-4">
         <div className="rounded-lg p-3 border" style={{ background:'var(--bg3)', borderColor:'var(--border)' }}>
           <div className="text-[10px] uppercase font-semibold mb-1" style={{ color:'var(--text3)' }}>Total budget</div>
-          <div className="text-[20px] font-bold font-mono" style={{ color:'var(--text)' }}>Â\u00a3{totalBudget.toLocaleString()}</div>
+          <div className="text-[20px] font-bold font-mono" style={{ color:'var(--text)' }}>Â£{totalBudget.toLocaleString()}</div>
           <div className="text-[10px] mt-0.5" style={{ color:'var(--text3)' }}>Fixed</div>
         </div>
         <div className="rounded-lg p-3 border transition-all" style={{
@@ -107,10 +107,10 @@ export function BudgetSimulator({ campaigns }: { campaigns: Campaign[] }) {
         }}>
           <div className="text-[10px] uppercase font-semibold mb-1" style={{ color:'var(--text3)' }}>Projected revenue</div>
           <div className="text-[20px] font-bold font-mono" style={{ color: revLift > 0 ? 'var(--teal)' : revLift < 0 ? 'var(--danger)' : 'var(--text)' }}>
-            Â\u00a3{Math.round(projected.revenue).toLocaleString()}
+            Â£{Math.round(projected.revenue).toLocaleString()}
           </div>
           <div className="text-[10px] mt-0.5 font-semibold" style={{ color: revLift > 0 ? 'var(--teal)' : revLift < 0 ? 'var(--danger)' : 'var(--text3)' }}>
-            {revLift === 0 ? 'No change' : `${revLift > 0 ? '+' : ''}Â\u00a3${Math.round(revLift).toLocaleString()}/mo vs current`}
+            {revLift === 0 ? 'No change' : `${revLift > 0 ? '+' : ''}Â£${Math.round(revLift).toLocaleString()}/mo vs current`}
           </div>
         </div>
         <div className="rounded-lg p-3 border transition-all" style={{
@@ -152,10 +152,10 @@ export function BudgetSimulator({ campaigns }: { campaigns: Campaign[] }) {
                   </div>
                 </div>
                 <div className="text-right shrink-0 ml-3">
-                  <div className="text-[14px] font-bold font-mono">Â\u00a3{Math.round(alloc).toLocaleString()}</div>
+                  <div className="text-[14px] font-bold font-mono">Â£{Math.round(alloc).toLocaleString()}</div>
                   {alloc !== c.spend && (
                     <div className="text-[10px] font-mono" style={{ color: alloc > c.spend ? 'var(--teal)' : 'var(--danger)' }}>
-                      {alloc > c.spend ? '+' : ''}Â\u00a3{Math.round(alloc - c.spend).toLocaleString()} vs original
+                      {alloc > c.spend ? '+' : ''}Â£{Math.round(alloc - c.spend).toLocaleString()} vs original
                     </div>
                   )}
                 </div>
@@ -184,11 +184,11 @@ export function BudgetSimulator({ campaigns }: { campaigns: Campaign[] }) {
 
               {/* Budget distribution bar */}
               <div className="flex items-center justify-between text-[10px]" style={{ color:'var(--text3)' }}>
-                <span>Â\u00a30</span>
+                <span>Â£0</span>
                 <span className="font-semibold" style={{ color: lift !== 0 ? (lift > 0 ? 'var(--teal)' : 'var(--danger)') : 'var(--text3)' }}>
-                  {lift === 0 ? `Rev: Â\u00a3${Math.round(projRev).toLocaleString()}` : `Rev: Â\u00a3${Math.round(projRev).toLocaleString()} (${lift > 0 ? '+' : ''}Â\u00a3${Math.round(lift).toLocaleString()})`}
+                  {lift === 0 ? `Rev: Â£${Math.round(projRev).toLocaleString()}` : `Rev: Â£${Math.round(projRev).toLocaleString()} (${lift > 0 ? '+' : ''}Â£${Math.round(lift).toLocaleString()})`}
                 </span>
-                <span>Â\u00a3{totalBudget.toLocaleString()}</span>
+                <span>Â£{totalBudget.toLocaleString()}</span>
               </div>
             </div>
           )
@@ -204,7 +204,7 @@ export function BudgetSimulator({ campaigns }: { campaigns: Campaign[] }) {
             return (
               <div key={c.id} className="h-full transition-all duration-150 relative group"
                 style={{ width: `${pct}%`, background: PLATFORM_COLORS[c.platform] || '#888', opacity: 0.8 }}
-                title={`${c.name}: Â\u00a3${Math.round(allocations[c.id]||0).toLocaleString()}`}
+                title={`${c.name}: Â£${Math.round(allocations[c.id]||0).toLocaleString()}`}
               />
             )
           })}
@@ -214,7 +214,7 @@ export function BudgetSimulator({ campaigns }: { campaigns: Campaign[] }) {
             <div key={c.id} className="flex items-center gap-1.5 text-[10px]" style={{ color:'var(--text2)' }}>
               <span className="w-2 h-2 rounded-full" style={{ background: PLATFORM_COLORS[c.platform] || '#888' }}/>
               <span className="truncate max-w-[140px]">{c.name}</span>
-              <span className="font-mono font-semibold">Â\u00a3{Math.round(allocations[c.id]||0).toLocaleString()}</span>
+              <span className="font-mono font-semibold">Â£{Math.round(allocations[c.id]||0).toLocaleString()}</span>
             </div>
           ))}
         </div>
