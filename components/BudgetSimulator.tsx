@@ -85,7 +85,7 @@ export function BudgetSimulator({ campaigns }: { campaigns: Campaign[] }) {
             Real-time budget simulator
           </div>
           <p className="text-[11px] mt-0.5" style={{ color:'var(--text3)' }}>
-            Drag the sliders to reallocate budget â projected revenue updates instantly. Total budget stays fixed at £{totalBudget.toLocaleString()}.
+            Drag the sliders to reallocate budget — projected revenue updates instantly. Total budget stays fixed at £{totalBudget.toLocaleString()}.
           </p>
         </div>
         <button onClick={reset} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all hover:bg-[var(--bg3)]"
