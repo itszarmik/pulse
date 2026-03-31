@@ -153,8 +153,8 @@ export default function SpendPage() {
       {/* KPI row */}
       <div className="grid grid-cols-4 gap-3 mb-5">
         {[
-          {label:'Monthly Spend',    value:`Â£${totalSpend.toLocaleString()}`,             icon:<DollarSign size={14}/>, hi:false},
-          {label:'Monthly Revenue',  value:`Â£${totalRevenue.toLocaleString()}`,           icon:<TrendingUp size={14}/>,  hi:true},
+          {label:'Monthly Spend',    value:`£${totalSpend.toLocaleString()}`,             icon:<DollarSign size={14}/>, hi:false},
+          {label:'Monthly Revenue',  value:`£${totalRevenue.toLocaleString()}`,           icon:<TrendingUp size={14}/>,  hi:true},
           {label:'Blended ROAS',     value:`${avgROAS.toFixed(2)}x`,                     icon:<BarChart2 size={14}/>,   hi:avgROAS>=3},
           {label:'Active Campaigns', value:campaigns.length,                                icon:<Target size={14}/>,      hi:false},
         ].map((c,i)=>(
@@ -194,10 +194,10 @@ export default function SpendPage() {
                       {c.platform}
                     </span>
                   </td>
-                  <td className="px-4 py-3 font-mono">Â£{c.spend.toLocaleString()}</td>
-                  <td className="px-4 py-3 font-mono" style={{color:'var(--teal)'}}>Â£{c.revenue.toLocaleString()}</td>
+                  <td className="px-4 py-3 font-mono">£{c.spend.toLocaleString()}</td>
+                  <td className="px-4 py-3 font-mono" style={{color:'var(--teal)'}}>£{c.revenue.toLocaleString()}</td>
                   <td className="px-4 py-3"><ROASBadge roas={c.roas}/></td>
-                  <td className="px-4 py-3 font-mono" style={{color:'var(--text2)'}}>Â£{c.cpc.toFixed(2)}</td>
+                  <td className="px-4 py-3 font-mono" style={{color:'var(--text2)'}}>£{c.cpc.toFixed(2)}</td>
                   <td className="px-4 py-3">
                     <span className="px-2 py-0.5 rounded text-[10px] font-semibold" style={{background:sig.bg,color:sig.c}}>{sig.l}</span>
                   </td>
@@ -214,7 +214,7 @@ export default function SpendPage() {
           <div className="flex-1 max-w-xs">
             <label className="block text-[12px] font-medium mb-1.5" style={{color:'var(--text2)'}}>Monthly budget to optimise</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[13px]" style={{color:'var(--text2)'}}>Â£</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[13px]" style={{color:'var(--text2)'}}>£</span>
               <input type="number" value={budget} onChange={e=>setBudget(e.target.value)}
                 placeholder={totalSpend.toLocaleString()}
                 className="w-full rounded-lg border pl-7 pr-3 py-2.5 text-[13px] outline-none focus:border-[var(--teal)]" style={is}/>
@@ -253,14 +253,14 @@ export default function SpendPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] mb-1" style={{color:'var(--text3)'}}>Amount (Â£)</label>
+                <label className="block text-[10px] mb-1" style={{color:'var(--text3)'}}>Amount (£)</label>
                 <input type="number" value={scenarioAmount} onChange={e=>setScenarioAmount(e.target.value)} placeholder="500" className="w-28 rounded-lg border px-3 py-2 text-[12px] outline-none" style={is}/>
               </div>
               {scenarioAmt>0 && scenarioTarget && (
                 <div className="rounded-lg px-4 py-2 border" style={{background:scenarioLift>0?'rgba(0,212,160,0.08)':'rgba(255,92,92,0.08)',borderColor:scenarioLift>0?'rgba(0,212,160,0.3)':'rgba(255,92,92,0.3)',marginTop:16}}>
                   <div className="text-[10px] font-medium" style={{color:'var(--text3)'}}>Projected revenue lift</div>
                   <div className="text-[16px] font-bold font-mono" style={{color:scenarioLift>0?'var(--teal)':'var(--danger)'}}>
-                    {scenarioLift>0?'+':''}Â£{Math.abs(scenarioLift).toLocaleString()}/mo
+                    {scenarioLift>0?'+':''}£{Math.abs(scenarioLift).toLocaleString()}/mo
                   </div>
                   <div className="text-[10px]" style={{color:'var(--text3)'}}>Based on {scenarioTarget.name}'s {scenarioTarget.roas.toFixed(1)}x ROAS</div>
                 </div>
@@ -312,11 +312,11 @@ export default function SpendPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-lg p-3" style={{background:'rgba(255,92,92,0.08)',border:'1px solid rgba(255,92,92,0.2)'}}>
                   <div className="text-[9px] uppercase font-bold mb-1" style={{color:'var(--danger)'}}>Wasted spend</div>
-                  <div className="text-[20px] font-bold font-mono" style={{color:'var(--danger)'}}>Â£{analysis.totalWastedSpend?.toLocaleString()}/mo</div>
+                  <div className="text-[20px] font-bold font-mono" style={{color:'var(--danger)'}}>£{analysis.totalWastedSpend?.toLocaleString()}/mo</div>
                 </div>
                 <div className="rounded-lg p-3" style={{background:'rgba(0,212,160,0.08)',border:'1px solid rgba(0,212,160,0.2)'}}>
                   <div className="text-[9px] uppercase font-bold mb-1" style={{color:'var(--teal)'}}>Revenue opportunity</div>
-                  <div className="text-[20px] font-bold font-mono" style={{color:'var(--teal)'}}>+Â£{analysis.totalOpportunityGain?.toLocaleString()}/mo</div>
+                  <div className="text-[20px] font-bold font-mono" style={{color:'var(--teal)'}}>+£{analysis.totalOpportunityGain?.toLocaleString()}/mo</div>
                 </div>
               </div>
             </div>
@@ -330,7 +330,7 @@ export default function SpendPage() {
               <div className="grid grid-cols-2 gap-3">
                 {[
                   {label:'Current ROAS',     val:`${avgROAS.toFixed(2)}x`,           proj:`${projectedROAS.toFixed(2)}x`,   good:projectedROAS>avgROAS},
-                  {label:'Current Revenue',  val:`Â£${totalRevenue.toLocaleString()}`, proj:`Â£${projectedRevenue?.toLocaleString()}`, good:projectedRevenue>totalRevenue},
+                  {label:'Current Revenue',  val:`£${totalRevenue.toLocaleString()}`, proj:`£${projectedRevenue?.toLocaleString()}`, good:projectedRevenue>totalRevenue},
                 ].map((row,i)=>(
                   <div key={i} className="rounded-lg p-3" style={{background:'var(--bg3)'}}>
                     <div className="text-[10px] mb-2" style={{color:'var(--text3)'}}>{row.label}</div>
@@ -365,13 +365,13 @@ export default function SpendPage() {
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-[10px]" style={{color:'var(--text3)'}}>{move.fromPlatform}</span>
                           <ROASBadge roas={move.fromCurrentROAS||0}/>
-                          <span className="text-[10px] font-mono" style={{color:'var(--text3)'}}>Â£{move.fromCurrentSpend?.toLocaleString()}/mo</span>
+                          <span className="text-[10px] font-mono" style={{color:'var(--text3)'}}>£{move.fromCurrentSpend?.toLocaleString()}/mo</span>
                         </div>
                       </div>
                       {/* AMOUNT */}
                       <div className="shrink-0 text-center px-3">
                         <div className="text-[10px] mb-1" style={{color:'var(--text3)'}}>Move</div>
-                        <div className="text-[18px] font-bold font-mono" style={{color:'var(--teal)'}}>Â£{move.amount?.toLocaleString()}</div>
+                        <div className="text-[18px] font-bold font-mono" style={{color:'var(--teal)'}}>£{move.amount?.toLocaleString()}</div>
                         <ArrowRight size={14} style={{color:'var(--text3)',margin:'2px auto'}}/>
                       </div>
                       {/* TO */}
@@ -381,7 +381,7 @@ export default function SpendPage() {
                         <div className="flex items-center gap-2 mt-1 justify-end">
                           <span className="text-[10px]" style={{color:'var(--text3)'}}>{move.toPlatform}</span>
                           <ROASBadge roas={move.toCurrentROAS||0}/>
-                          <span className="text-[10px] font-mono" style={{color:'var(--text3)'}}>Â£{move.toCurrentSpend?.toLocaleString()}/mo</span>
+                          <span className="text-[10px] font-mono" style={{color:'var(--text3)'}}>£{move.toCurrentSpend?.toLocaleString()}/mo</span>
                         </div>
                       </div>
                     </div>
@@ -390,7 +390,7 @@ export default function SpendPage() {
                         <span className="text-[11px]" style={{color:'var(--text2)'}}>{move.reason}</span>
                         {move.projectedRevenueLift>0 && (
                           <span className="ml-2 text-[11px] font-bold" style={{color:'var(--teal)'}}>
-                            Â· Projected +Â£{move.projectedRevenueLift?.toLocaleString()}/mo
+                            Â· Projected +£{move.projectedRevenueLift?.toLocaleString()}/mo
                           </span>
                         )}
                       </div>
@@ -483,7 +483,7 @@ export default function SpendPage() {
                         <div className="rounded-lg p-3 text-[12px]" style={{background:'var(--bg3)'}}>
                           <div className="font-semibold mb-1" style={{color:'var(--text2)'}}>Why this recommendation?</div>
                           <div style={{color:'var(--text2)'}}>{r.reason}</div>
-                          {r.currentROAS&&<div className="mt-1.5 text-[11px]" style={{color:'var(--text3)'}}>Current ROAS: <span className="font-mono">{r.currentROAS?.toFixed(1)}x</span> Â· Current spend: <span className="font-mono">Â£{r.currentSpend?.toLocaleString()}</span></div>}
+                          {r.currentROAS&&<div className="mt-1.5 text-[11px]" style={{color:'var(--text3)'}}>Current ROAS: <span className="font-mono">{r.currentROAS?.toFixed(1)}x</span> Â· Current spend: <span className="font-mono">£{r.currentSpend?.toLocaleString()}</span></div>}
                         </div>
                       </div>
                     )}
