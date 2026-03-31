@@ -182,9 +182,9 @@ export default function SpendPage() {
           </tr></thead>
           <tbody>
             {[...campaigns].sort((a,b)=>b.roas-a.roas).map(c=>{
-              const sig = c.roas>=4?{l:'Scale â',c:'var(--teal)',bg:'rgba(0,212,160,0.1)'}
+              const sig = c.roas>=4?{l:'Scale ↑',c:'var(--teal)',bg:'rgba(0,212,160,0.1)'}
                         : c.roas>=2.5?{l:'Maintain',c:'var(--warn)',bg:'rgba(255,170,68,0.1)'}
-                        : {l:'Review â',c:'var(--danger)',bg:'rgba(255,92,92,0.1)'}
+                        : {l:'Review ↓',c:'var(--danger)',bg:'rgba(255,92,92,0.1)'}
               return (
                 <tr key={c.id} style={{borderBottom:'1px solid var(--border)'}} className="hover:bg-[var(--bg3)] transition-colors">
                   <td className="px-4 py-3 font-medium max-w-[220px]"><div className="truncate">{c.name}</div></td>
@@ -339,7 +339,7 @@ export default function SpendPage() {
                       <ArrowRight size={10} style={{color:'var(--text3)'}}/>
                       <div className="text-[15px] font-bold font-mono" style={{color:row.good?'var(--teal)':'var(--danger)'}}>{row.proj}</div>
                     </div>
-                    {row.good && <div className="text-[9px] mt-1" style={{color:'var(--teal)'}}>â Improvement projected</div>}
+                    {row.good && <div className="text-[9px] mt-1" style={{color:'var(--teal)'}}>↑ Improvement projected</div>}
                   </div>
                 ))}
               </div>
@@ -360,7 +360,7 @@ export default function SpendPage() {
                     <div className="flex items-center gap-3 mb-2">
                       {/* FROM */}
                       <div className="flex-1 min-w-0">
-                        <div className="text-[10px] font-medium uppercase mb-1" style={{color:'var(--danger)'}}>â Remove from</div>
+                        <div className="text-[10px] font-medium uppercase mb-1" style={{color:'var(--danger)'}}>↓ Remove from</div>
                         <div className="text-[12px] font-semibold truncate">{move.from}</div>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-[10px]" style={{color:'var(--text3)'}}>{move.fromPlatform}</span>
@@ -376,7 +376,7 @@ export default function SpendPage() {
                       </div>
                       {/* TO */}
                       <div className="flex-1 min-w-0 text-right">
-                        <div className="text-[10px] font-medium uppercase mb-1" style={{color:'var(--teal)'}}>â Add to</div>
+                        <div className="text-[10px] font-medium uppercase mb-1" style={{color:'var(--teal)'}}>↑ Add to</div>
                         <div className="text-[12px] font-semibold truncate">{move.to}</div>
                         <div className="flex items-center gap-2 mt-1 justify-end">
                           <span className="text-[10px]" style={{color:'var(--text3)'}}>{move.toPlatform}</span>
