@@ -198,7 +198,7 @@ function BillingContent() {
         <div>
           <div className="text-[13px] font-semibold mb-0.5">🔒 Secure payments by Stripe</div>
           <div className="text-[12px]" style={{ color: 'var(--text2)' }}>
-            All plans include a 14-day free trial. Cancel anytime — no questions asked.
+            All plans include a 30-day money-back guarantee. Cancel anytime.
           </div>
         </div>
         <div className="flex gap-3 shrink-0">
