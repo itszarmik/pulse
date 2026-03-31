@@ -168,7 +168,7 @@ export default function LandingPage() {
         </div>
         <p style={{ marginTop: 16, fontSize: 13, color: '#8b90a0' }}>
           <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6 }}/>Instant access
-          <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6, marginLeft: 16 }}/>Cancel anytime
+          <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6, marginLeft: 16 }}/>Secure payment
           <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6, marginLeft: 16 }}/>Cancel anytime
         </p>
       </section>
