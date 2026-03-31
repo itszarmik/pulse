@@ -4,6 +4,7 @@ import { PageHeader, Spinner } from '@/components/ui'
 import { useUser } from '@clerk/nextjs'
 import { supabase } from '@/lib/supabase'
 import { TrendingUp, TrendingDown, AlertTriangle, ArrowRight, DollarSign, Zap, Target, BarChart2, CheckCircle, Clock, ChevronDown, ChevronUp, Sparkles, ArrowUpRight } from 'lucide-react'
+import { BudgetSimulator } from '@/components/BudgetSimulator'
 
 type Campaign = { id:string; name:string; platform:string; spend:number; revenue:number; roas:number; clicks:number; impressions:number; conversions:number; ctr:number; cpc:number; status:string }
 type Rec = { type:string; campaign:string; platform:string; currentSpend:number; currentROAS:number; action:string; reason:string; impact:string; impactValue:number; confidence:number; priority:string; effort:string }
@@ -18,12 +19,12 @@ type Analysis = {
 }
 
 const MOCK:Campaign[] = [
-  { id:'1', name:'Summer Sale — Broad Audience',  platform:'Meta',   spend:3200, revenue:4480,  roas:1.4, clicks:8200, impressions:142000, conversions:89,  ctr:5.77, cpc:0.39, status:'Active' },
-  { id:'2', name:'Retargeting — Cart Abandoners', platform:'Meta',   spend:800,  revenue:6240,  roas:7.8, clicks:1240, impressions:18600,  conversions:156, ctr:6.67, cpc:0.65, status:'Active' },
+  { id:'1', name:'Summer Sale â Broad Audience',  platform:'Meta',   spend:3200, revenue:4480,  roas:1.4, clicks:8200, impressions:142000, conversions:89,  ctr:5.77, cpc:0.39, status:'Active' },
+  { id:'2', name:'Retargeting â Cart Abandoners', platform:'Meta',   spend:800,  revenue:6240,  roas:7.8, clicks:1240, impressions:18600,  conversions:156, ctr:6.67, cpc:0.65, status:'Active' },
   { id:'3', name:'Brand Awareness Q3',            platform:'Google', spend:1500, revenue:1200,  roas:0.8, clicks:3100, impressions:89000,  conversions:24,  ctr:3.48, cpc:0.48, status:'Active' },
-  { id:'4', name:'Google Shopping — All Products',platform:'Google', spend:1200, revenue:5400,  roas:4.5, clicks:2800, impressions:41000,  conversions:108, ctr:6.83, cpc:0.43, status:'Active' },
-  { id:'5', name:'TikTok — Product Demo Video',   platform:'TikTok', spend:2100, revenue:2520,  roas:1.2, clicks:6700, impressions:198000, conversions:63,  ctr:3.38, cpc:0.31, status:'Active' },
-  { id:'6', name:'Lookalike — Past Purchasers',   platform:'Meta',   spend:950,  revenue:5700,  roas:6.0, clicks:1800, impressions:28000,  conversions:142, ctr:6.43, cpc:0.53, status:'Active' },
+  { id:'4', name:'Google Shopping â All Products',platform:'Google', spend:1200, revenue:5400,  roas:4.5, clicks:2800, impressions:41000,  conversions:108, ctr:6.83, cpc:0.43, status:'Active' },
+  { id:'5', name:'TikTok â Product Demo Video',   platform:'TikTok', spend:2100, revenue:2520,  roas:1.2, clicks:6700, impressions:198000, conversions:63,  ctr:3.38, cpc:0.31, status:'Active' },
+  { id:'6', name:'Lookalike â Past Purchasers',   platform:'Meta',   spend:950,  revenue:5700,  roas:6.0, clicks:1800, impressions:28000,  conversions:142, ctr:6.43, cpc:0.53, status:'Active' },
 ]
 
 const PLATFORM_COLORS: Record<string,string> = { Meta:'#1877f2', Google:'#ea4335', TikTok:'#00d4a0' }
@@ -56,7 +57,7 @@ function ApplyButton({ applied, onClick }: { applied:boolean; onClick:()=>void }
       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all shrink-0"
       style={{ background: applied?'rgba(0,212,160,0.1)':'var(--teal)', color: applied?'var(--teal)':'#001a12',
                border: applied?'1px solid rgba(0,212,160,0.3)':'none', cursor: applied?'default':'pointer' }}>
-      {applied ? <><CheckCircle size={11}/> Applied</> : <>Apply →</>}
+      {applied ? <><CheckCircle size={11}/> Applied</> : <>Apply â</>}
     </button>
   )
 }
@@ -92,7 +93,7 @@ export default function SpendPage() {
   const totalRevenue = campaigns.reduce((s,c)=>s+c.revenue,0)
   const avgROAS = totalSpend>0?totalRevenue/totalSpend:0
 
-  // Apply a budget move — updates local campaign state to show projected numbers
+  // Apply a budget move â updates local campaign state to show projected numbers
   const applyMove = (idx:number, move:BudgetMove) => {
     setAppliedMoves(prev => new Set([...prev, idx]))
     setCampaigns(prev => prev.map(c => {
@@ -145,15 +146,15 @@ export default function SpendPage() {
       {usingMock && (
         <div className="mb-5 px-4 py-3 rounded-lg border flex items-center gap-2 text-[12px]"
           style={{background:'rgba(255,170,68,0.08)',borderColor:'rgba(255,170,68,0.25)',color:'var(--warn)'}}>
-          <AlertTriangle size={13}/>Demo data shown — <a href="/import" className="underline ml-1">connect your ad platforms</a> to analyse real campaigns.
+          <AlertTriangle size={13}/>Demo data shown â <a href="/import" className="underline ml-1">connect your ad platforms</a> to analyse real campaigns.
         </div>
       )}
 
       {/* KPI row */}
       <div className="grid grid-cols-4 gap-3 mb-5">
         {[
-          {label:'Monthly Spend',    value:`£${totalSpend.toLocaleString()}`,             icon:<DollarSign size={14}/>, hi:false},
-          {label:'Monthly Revenue',  value:`£${totalRevenue.toLocaleString()}`,           icon:<TrendingUp size={14}/>,  hi:true},
+          {label:'Monthly Spend',    value:`Â£${totalSpend.toLocaleString()}`,             icon:<DollarSign size={14}/>, hi:false},
+          {label:'Monthly Revenue',  value:`Â£${totalRevenue.toLocaleString()}`,           icon:<TrendingUp size={14}/>,  hi:true},
           {label:'Blended ROAS',     value:`${avgROAS.toFixed(2)}x`,                     icon:<BarChart2 size={14}/>,   hi:avgROAS>=3},
           {label:'Active Campaigns', value:campaigns.length,                                icon:<Target size={14}/>,      hi:false},
         ].map((c,i)=>(
@@ -171,7 +172,7 @@ export default function SpendPage() {
       <div className="rounded-xl border overflow-hidden mb-5" style={{background:'var(--bg2)',borderColor:'var(--border)'}}>
         <div className="flex items-center justify-between px-5 py-3.5 border-b" style={{borderColor:'var(--border)'}}>
           <div className="text-[13px] font-semibold">Campaign overview</div>
-          <div className="text-[11px]" style={{color:'var(--text3)'}}>Sorted by ROAS — highest first</div>
+          <div className="text-[11px]" style={{color:'var(--text3)'}}>Sorted by ROAS â highest first</div>
         </div>
         <table className="w-full text-[12px]">
           <thead><tr style={{borderBottom:'1px solid var(--border)'}}>
@@ -181,9 +182,9 @@ export default function SpendPage() {
           </tr></thead>
           <tbody>
             {[...campaigns].sort((a,b)=>b.roas-a.roas).map(c=>{
-              const sig = c.roas>=4?{l:'Scale ↑',c:'var(--teal)',bg:'rgba(0,212,160,0.1)'}
+              const sig = c.roas>=4?{l:'Scale â',c:'var(--teal)',bg:'rgba(0,212,160,0.1)'}
                         : c.roas>=2.5?{l:'Maintain',c:'var(--warn)',bg:'rgba(255,170,68,0.1)'}
-                        : {l:'Review ↓',c:'var(--danger)',bg:'rgba(255,92,92,0.1)'}
+                        : {l:'Review â',c:'var(--danger)',bg:'rgba(255,92,92,0.1)'}
               return (
                 <tr key={c.id} style={{borderBottom:'1px solid var(--border)'}} className="hover:bg-[var(--bg3)] transition-colors">
                   <td className="px-4 py-3 font-medium max-w-[220px]"><div className="truncate">{c.name}</div></td>
@@ -193,10 +194,10 @@ export default function SpendPage() {
                       {c.platform}
                     </span>
                   </td>
-                  <td className="px-4 py-3 font-mono">£{c.spend.toLocaleString()}</td>
-                  <td className="px-4 py-3 font-mono" style={{color:'var(--teal)'}}>£{c.revenue.toLocaleString()}</td>
+                  <td className="px-4 py-3 font-mono">Â£{c.spend.toLocaleString()}</td>
+                  <td className="px-4 py-3 font-mono" style={{color:'var(--teal)'}}>Â£{c.revenue.toLocaleString()}</td>
                   <td className="px-4 py-3"><ROASBadge roas={c.roas}/></td>
-                  <td className="px-4 py-3 font-mono" style={{color:'var(--text2)'}}>£{c.cpc.toFixed(2)}</td>
+                  <td className="px-4 py-3 font-mono" style={{color:'var(--text2)'}}>Â£{c.cpc.toFixed(2)}</td>
                   <td className="px-4 py-3">
                     <span className="px-2 py-0.5 rounded text-[10px] font-semibold" style={{background:sig.bg,color:sig.c}}>{sig.l}</span>
                   </td>
@@ -213,7 +214,7 @@ export default function SpendPage() {
           <div className="flex-1 max-w-xs">
             <label className="block text-[12px] font-medium mb-1.5" style={{color:'var(--text2)'}}>Monthly budget to optimise</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[13px]" style={{color:'var(--text2)'}}>£</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[13px]" style={{color:'var(--text2)'}}>Â£</span>
               <input type="number" value={budget} onChange={e=>setBudget(e.target.value)}
                 placeholder={totalSpend.toLocaleString()}
                 className="w-full rounded-lg border pl-7 pr-3 py-2.5 text-[13px] outline-none focus:border-[var(--teal)]" style={is}/>
@@ -252,14 +253,14 @@ export default function SpendPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] mb-1" style={{color:'var(--text3)'}}>Amount (£)</label>
+                <label className="block text-[10px] mb-1" style={{color:'var(--text3)'}}>Amount (Â£)</label>
                 <input type="number" value={scenarioAmount} onChange={e=>setScenarioAmount(e.target.value)} placeholder="500" className="w-28 rounded-lg border px-3 py-2 text-[12px] outline-none" style={is}/>
               </div>
               {scenarioAmt>0 && scenarioTarget && (
                 <div className="rounded-lg px-4 py-2 border" style={{background:scenarioLift>0?'rgba(0,212,160,0.08)':'rgba(255,92,92,0.08)',borderColor:scenarioLift>0?'rgba(0,212,160,0.3)':'rgba(255,92,92,0.3)',marginTop:16}}>
                   <div className="text-[10px] font-medium" style={{color:'var(--text3)'}}>Projected revenue lift</div>
                   <div className="text-[16px] font-bold font-mono" style={{color:scenarioLift>0?'var(--teal)':'var(--danger)'}}>
-                    {scenarioLift>0?'+':''}£{Math.abs(scenarioLift).toLocaleString()}/mo
+                    {scenarioLift>0?'+':''}Â£{Math.abs(scenarioLift).toLocaleString()}/mo
                   </div>
                   <div className="text-[10px]" style={{color:'var(--text3)'}}>Based on {scenarioTarget.name}'s {scenarioTarget.roas.toFixed(1)}x ROAS</div>
                 </div>
@@ -267,6 +268,11 @@ export default function SpendPage() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* BUDGET SIMULATOR — always visible */}
+      <div className="mb-5">
+        <BudgetSimulator campaigns={campaigns} />
       </div>
 
       {/* ANALYSIS RESULTS */}
@@ -281,7 +287,7 @@ export default function SpendPage() {
                 <Sparkles size={18} color="#001a12"/>
               </div>
               <div className="flex-1">
-                <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{color:'var(--teal)'}}>⚡ Biggest quick win</div>
+                <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{color:'var(--teal)'}}>â¡ Biggest quick win</div>
                 <div className="text-[15px] font-bold mb-1">{analysis.quickWin.title}</div>
                 <div className="text-[12px] mb-2" style={{color:'var(--text2)'}}>{analysis.quickWin.description}</div>
                 <div className="flex items-center gap-3">
@@ -306,11 +312,11 @@ export default function SpendPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-lg p-3" style={{background:'rgba(255,92,92,0.08)',border:'1px solid rgba(255,92,92,0.2)'}}>
                   <div className="text-[9px] uppercase font-bold mb-1" style={{color:'var(--danger)'}}>Wasted spend</div>
-                  <div className="text-[20px] font-bold font-mono" style={{color:'var(--danger)'}}>£{analysis.totalWastedSpend?.toLocaleString()}/mo</div>
+                  <div className="text-[20px] font-bold font-mono" style={{color:'var(--danger)'}}>Â£{analysis.totalWastedSpend?.toLocaleString()}/mo</div>
                 </div>
                 <div className="rounded-lg p-3" style={{background:'rgba(0,212,160,0.08)',border:'1px solid rgba(0,212,160,0.2)'}}>
                   <div className="text-[9px] uppercase font-bold mb-1" style={{color:'var(--teal)'}}>Revenue opportunity</div>
-                  <div className="text-[20px] font-bold font-mono" style={{color:'var(--teal)'}}>+£{analysis.totalOpportunityGain?.toLocaleString()}/mo</div>
+                  <div className="text-[20px] font-bold font-mono" style={{color:'var(--teal)'}}>+Â£{analysis.totalOpportunityGain?.toLocaleString()}/mo</div>
                 </div>
               </div>
             </div>
@@ -324,7 +330,7 @@ export default function SpendPage() {
               <div className="grid grid-cols-2 gap-3">
                 {[
                   {label:'Current ROAS',     val:`${avgROAS.toFixed(2)}x`,           proj:`${projectedROAS.toFixed(2)}x`,   good:projectedROAS>avgROAS},
-                  {label:'Current Revenue',  val:`£${totalRevenue.toLocaleString()}`, proj:`£${projectedRevenue?.toLocaleString()}`, good:projectedRevenue>totalRevenue},
+                  {label:'Current Revenue',  val:`Â£${totalRevenue.toLocaleString()}`, proj:`Â£${projectedRevenue?.toLocaleString()}`, good:projectedRevenue>totalRevenue},
                 ].map((row,i)=>(
                   <div key={i} className="rounded-lg p-3" style={{background:'var(--bg3)'}}>
                     <div className="text-[10px] mb-2" style={{color:'var(--text3)'}}>{row.label}</div>
@@ -333,7 +339,7 @@ export default function SpendPage() {
                       <ArrowRight size={10} style={{color:'var(--text3)'}}/>
                       <div className="text-[15px] font-bold font-mono" style={{color:row.good?'var(--teal)':'var(--danger)'}}>{row.proj}</div>
                     </div>
-                    {row.good && <div className="text-[9px] mt-1" style={{color:'var(--teal)'}}>↑ Improvement projected</div>}
+                    {row.good && <div className="text-[9px] mt-1" style={{color:'var(--teal)'}}>â Improvement projected</div>}
                   </div>
                 ))}
               </div>
@@ -354,28 +360,28 @@ export default function SpendPage() {
                     <div className="flex items-center gap-3 mb-2">
                       {/* FROM */}
                       <div className="flex-1 min-w-0">
-                        <div className="text-[10px] font-medium uppercase mb-1" style={{color:'var(--danger)'}}>↓ Remove from</div>
+                        <div className="text-[10px] font-medium uppercase mb-1" style={{color:'var(--danger)'}}>â Remove from</div>
                         <div className="text-[12px] font-semibold truncate">{move.from}</div>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-[10px]" style={{color:'var(--text3)'}}>{move.fromPlatform}</span>
                           <ROASBadge roas={move.fromCurrentROAS||0}/>
-                          <span className="text-[10px] font-mono" style={{color:'var(--text3)'}}>£{move.fromCurrentSpend?.toLocaleString()}/mo</span>
+                          <span className="text-[10px] font-mono" style={{color:'var(--text3)'}}>Â£{move.fromCurrentSpend?.toLocaleString()}/mo</span>
                         </div>
                       </div>
                       {/* AMOUNT */}
                       <div className="shrink-0 text-center px-3">
                         <div className="text-[10px] mb-1" style={{color:'var(--text3)'}}>Move</div>
-                        <div className="text-[18px] font-bold font-mono" style={{color:'var(--teal)'}}>£{move.amount?.toLocaleString()}</div>
+                        <div className="text-[18px] font-bold font-mono" style={{color:'var(--teal)'}}>Â£{move.amount?.toLocaleString()}</div>
                         <ArrowRight size={14} style={{color:'var(--text3)',margin:'2px auto'}}/>
                       </div>
                       {/* TO */}
                       <div className="flex-1 min-w-0 text-right">
-                        <div className="text-[10px] font-medium uppercase mb-1" style={{color:'var(--teal)'}}>↑ Add to</div>
+                        <div className="text-[10px] font-medium uppercase mb-1" style={{color:'var(--teal)'}}>â Add to</div>
                         <div className="text-[12px] font-semibold truncate">{move.to}</div>
                         <div className="flex items-center gap-2 mt-1 justify-end">
                           <span className="text-[10px]" style={{color:'var(--text3)'}}>{move.toPlatform}</span>
                           <ROASBadge roas={move.toCurrentROAS||0}/>
-                          <span className="text-[10px] font-mono" style={{color:'var(--text3)'}}>£{move.toCurrentSpend?.toLocaleString()}/mo</span>
+                          <span className="text-[10px] font-mono" style={{color:'var(--text3)'}}>Â£{move.toCurrentSpend?.toLocaleString()}/mo</span>
                         </div>
                       </div>
                     </div>
@@ -384,7 +390,7 @@ export default function SpendPage() {
                         <span className="text-[11px]" style={{color:'var(--text2)'}}>{move.reason}</span>
                         {move.projectedRevenueLift>0 && (
                           <span className="ml-2 text-[11px] font-bold" style={{color:'var(--teal)'}}>
-                            · Projected +£{move.projectedRevenueLift?.toLocaleString()}/mo
+                            Â· Projected +Â£{move.projectedRevenueLift?.toLocaleString()}/mo
                           </span>
                         )}
                       </div>
@@ -398,7 +404,7 @@ export default function SpendPage() {
                   onClick={()=>analysis.budgetPlan.forEach((m,i)=>{ if(!appliedMoves.has(i)) applyMove(i,m) })}
                   className="mt-3 w-full py-2.5 rounded-lg text-[13px] font-bold border transition-all"
                   style={{borderColor:'rgba(0,212,160,0.3)',color:'var(--teal)',background:'rgba(0,212,160,0.06)'}}>
-                  Apply all {analysis.budgetPlan.length} moves at once →
+                  Apply all {analysis.budgetPlan.length} moves at once â
                 </button>
               )}
             </div>
@@ -477,7 +483,7 @@ export default function SpendPage() {
                         <div className="rounded-lg p-3 text-[12px]" style={{background:'var(--bg3)'}}>
                           <div className="font-semibold mb-1" style={{color:'var(--text2)'}}>Why this recommendation?</div>
                           <div style={{color:'var(--text2)'}}>{r.reason}</div>
-                          {r.currentROAS&&<div className="mt-1.5 text-[11px]" style={{color:'var(--text3)'}}>Current ROAS: <span className="font-mono">{r.currentROAS?.toFixed(1)}x</span> · Current spend: <span className="font-mono">£{r.currentSpend?.toLocaleString()}</span></div>}
+                          {r.currentROAS&&<div className="mt-1.5 text-[11px]" style={{color:'var(--text3)'}}>Current ROAS: <span className="font-mono">{r.currentROAS?.toFixed(1)}x</span> Â· Current spend: <span className="font-mono">Â£{r.currentSpend?.toLocaleString()}</span></div>}
                         </div>
                       </div>
                     )}
