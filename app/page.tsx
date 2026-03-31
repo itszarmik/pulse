@@ -1,248 +1,384 @@
+'use client'
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { ArrowRight, Zap, BarChart2, Target, Bell, Users, FileText, TrendingUp, Check, ChevronRight, Star, Shield, Clock } from 'lucide-react'
+
+// Animated counter hook
+function useCounter(target: number, duration = 2000, start = false) {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    if (!start) return
+    let startTime: number
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp
+      const progress = Math.min((timestamp - startTime) / duration, 1)
+      setCount(Math.floor(progress * target))
+      if (progress < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }, [target, duration, start])
+  return count
+}
+
+const FEATURES = [
+  {
+    icon: <Zap size={20} />,
+    title: 'AI Budget Reallocation',
+    desc: 'Claude analyses every campaign and tells you exactly where to move budget. Drag sliders to see projected revenue update in real time.',
+    color: '#00d4a0',
+    stat: '+£12,400/mo average revenue lift',
+  },
+  {
+    icon: <BarChart2 size={20} />,
+    title: 'Spend Intelligence',
+    desc: 'Instantly identify wasted spend and scale winners. Get a full reallocation plan with confidence scores and one-click apply.',
+    color: '#6366f1',
+    stat: '85% AI confidence on recommendations',
+  },
+  {
+    icon: <FileText size={20} />,
+    title: 'White-label Client Reports',
+    desc: 'One click generates a branded performance report with AI narrative. Share a link — clients see your logo, not ours.',
+    color: '#f97316',
+    stat: '4 hours saved per client per month',
+  },
+  {
+    icon: <Bell size={20} />,
+    title: 'Real-time Alerts',
+    desc: 'Set ROAS, spend and CPA thresholds. Get notified the moment a campaign needs attention — before it costs you.',
+    color: '#eab308',
+    stat: 'Catch issues in minutes, not days',
+  },
+  {
+    icon: <Target size={20} />,
+    title: 'Creative Intelligence',
+    desc: 'Discover which ad formats, copy styles and audiences convert best across all your clients. Pattern recognition at scale.',
+    color: '#ec4899',
+    stat: 'Across 3 platforms simultaneously',
+  },
+  {
+    icon: <Users size={20} />,
+    title: 'Multi-client Workspace',
+    desc: 'Manage every client account in one dashboard. Invite team members with role-based access. Built for agencies from day one.',
+    color: '#06b6d4',
+    stat: 'Unlimited clients on Agency plan',
+  },
+]
+
+const PLANS = [
+  {
+    name: 'Starter', price: '£99', per: '/month',
+    desc: 'For growing agencies managing a handful of clients.',
+    features: ['Up to 5 client accounts', '20 AI analysis calls/month', 'Campaign dashboard & insights', 'CSV data import', 'Client reports'],
+    cta: 'Start free trial', href: '/sign-up', featured: false,
+  },
+  {
+    name: 'Pro', price: '£499', per: '/month',
+    desc: 'For serious agencies scaling their ad operations.',
+    features: ['Up to 25 client accounts', '100 AI analysis calls/month', 'AI Budget Reallocation', 'Ad Variant Generator', 'White-label reports', 'Priority support'],
+    cta: 'Start free trial', href: '/sign-up', featured: true,
+  },
+  {
+    name: 'Agency', price: '£1,999', per: '/month',
+    desc: 'For large agencies with high-volume needs.',
+    features: ['Unlimited client accounts', 'Unlimited AI calls', 'Custom white-label domain', 'Dedicated account manager', 'Custom integrations', 'SLA guarantee'],
+    cta: 'Contact us', href: '/sign-up', featured: false,
+  },
+]
+
+const TESTIMONIALS = [
+  { name: 'Sarah M.', role: 'Head of Paid Media, Forge Digital', quote: 'Pulse found £3,200 in wasted spend in our first analysis. Paid for itself in 6 days.', stars: 5 },
+  { name: 'James T.', role: 'Founder, Apex Growth Agency', quote: 'The white-label reports alone save me 2 days a month. My clients think I built something custom.', stars: 5 },
+  { name: 'Priya K.', role: 'Performance Director, Scale Co.', quote: 'The budget simulator is insane. I can show clients exactly what moving £500 will do before touching anything.', stars: 5 },
+]
+
+// Fake live campaign data for hero demo
+const DEMO_CAMPAIGNS = [
+  { name: 'Retargeting — Cart Abandoners', platform: 'Meta', spend: '£800', roas: '7.8x', signal: 'Scale ↑', signalColor: '#00d4a0' },
+  { name: 'Google Shopping — All Products', platform: 'Google', spend: '£1,200', roas: '4.5x', signal: 'Scale ↑', signalColor: '#00d4a0' },
+  { name: 'Summer Sale — Broad Audience', platform: 'Meta', spend: '£3,200', roas: '1.4x', signal: 'Review ↓', signalColor: '#ff5c5c' },
+  { name: 'TikTok — Product Demo Video', platform: 'TikTok', spend: '£2,100', roas: '1.2x', signal: 'Review ↓', signalColor: '#ff5c5c' },
+]
+
+const PLATFORM_COLORS: Record<string,string> = { Meta: '#1877f2', Google: '#ea4335', TikTok: '#00d4a0' }
 
 export default function LandingPage() {
-  const stats = [
-    { value: '4.2x', label: 'Average ROAS improvement' },
-    { value: '£2.4M', label: 'Ad spend managed' },
-    { value: '3 min', label: 'Average setup time' },
-    { value: '98%', label: 'Customer satisfaction' },
-  ]
+  const [statsVisible, setStatsVisible] = useState(false)
+  const [activeFeature, setActiveFeature] = useState(0)
 
-  const features = [
-    { icon: '📊', title: 'Live campaign dashboard', desc: 'Track ROAS, spend, clicks and conversions across Meta, Google and TikTok in a single view. Filter by platform, status and date range.' },
-    { icon: '🤖', title: 'AI campaign analysis', desc: 'Get actionable recommendations from Claude AI. Know exactly which campaigns to scale, pause or optimise before you waste budget.' },
-    { icon: '✨', title: 'Ad variant generator', desc: 'Generate 5 high-converting ad copy variants in seconds. Specify your platform, audience, tone and objective.' },
-    { icon: '🏢', title: 'Multi-client accounts', desc: 'Manage all your clients from one workspace. Each account gets its own campaigns, reports and performance insights.' },
-    { icon: '📈', title: 'ROAS benchmarking', desc: 'See how each campaign performs against platform benchmarks. Instant signal on what is underperforming before it costs you.' },
-    { icon: '📥', title: 'CSV and platform import', desc: 'Connect Meta, Google and TikTok directly or import via CSV. Get up and running in minutes with your existing data.' },
-  ]
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setStatsVisible(true) }, { threshold: 0.3 })
+    const el = document.getElementById('stats-section')
+    if (el) obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
 
-  const plans = [
-    { name: 'Starter', price: '£99', features: ['5 client accounts', '20 AI calls/month', 'Campaign dashboard', 'CSV import', 'Email support'], highlight: false },
-    { name: 'Pro', price: '£499', features: ['25 client accounts', '100 AI calls/month', 'Everything in Starter', 'Ad Variant Generator', 'ROAS benchmarking', 'Priority support'], highlight: true },
-    { name: 'Agency', price: '£1,999', features: ['Unlimited accounts', 'Unlimited AI calls', 'Everything in Pro', 'White-label reports', 'Dedicated manager', 'Custom integrations'], highlight: false },
-  ]
+  useEffect(() => {
+    const t = setInterval(() => setActiveFeature(f => (f + 1) % FEATURES.length), 3500)
+    return () => clearInterval(t)
+  }, [])
 
-  const kpis = [
-    { label: 'ROAS', value: '4.2x', color: 'var(--teal)' },
-    { label: 'Total Spend', value: '£24,830', color: 'var(--text)' },
-    { label: 'Clicks', value: '142K', color: 'var(--text)' },
-    { label: 'Conversions', value: '2,194', color: 'var(--text)' },
-  ]
-
-  const campaigns = [
-    { name: 'Summer Sale 2025', platform: 'Meta', roas: '5.1x', dot: '#1877f2' },
-    { name: 'Brand Awareness Q2', platform: 'Google', roas: '3.8x', dot: '#ea4335' },
-    { name: 'Retargeting — Cart Abandoners', platform: 'Meta', roas: '6.2x', dot: '#1877f2' },
-  ]
+  const roas = useCounter(42, 1800, statsVisible)
+  const spend = useCounter(24, 2000, statsVisible)
+  const clients = useCounter(98, 1600, statsVisible)
 
   return (
-    <div style={{ background: 'var(--bg)', color: 'var(--text)', minHeight: '100vh' }}>
+    <div style={{ background: '#0d0f14', color: '#e8eaf0', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', overflowX: 'hidden' }}>
 
-      {/* Navbar */}
-      <nav style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg2)' }}
-        className="sticky top-0 z-50 flex items-center justify-between px-8 h-[56px]">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-[7px] flex items-center justify-center" style={{ background: 'var(--teal)' }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M2 8L8 2L14 8L8 14L2 8Z" fill="white"/>
-              <path d="M5 8L8 5L11 8L8 11L5 8Z" fill="#0d0f14"/>
-            </svg>
+      {/* NAV */}
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 48px', height: 60, background: 'rgba(13,15,20,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 30, height: 30, background: '#00d4a0', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8L8 2L14 8L8 14L2 8Z" fill="white"/><path d="M5 8L8 5L11 8L8 11L5 8Z" fill="#0d0f14"/></svg>
           </div>
-          <span className="font-mono font-bold text-[15px]">Pulse</span>
+          <span style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: 16 }}>Pulse</span>
         </div>
-        <div className="flex items-center gap-6">
-          <a href="#features" className="text-[13px] no-underline" style={{ color: 'var(--text2)' }}>Features</a>
-          <a href="#pricing" className="text-[13px] no-underline" style={{ color: 'var(--text2)' }}>Pricing</a>
-          <Link href="/sign-in" className="text-[13px] no-underline" style={{ color: 'var(--text2)' }}>Log in</Link>
-          <Link href="/sign-up" className="px-4 py-1.5 rounded-[7px] text-[13px] font-semibold no-underline"
-            style={{ background: 'var(--teal)', color: '#001a12' }}>
-            Start free trial
-          </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 32, fontSize: 14, color: '#8b90a0' }}>
+          <a href="#features" style={{ color: 'inherit', textDecoration: 'none' }} onClick={e => { e.preventDefault(); document.getElementById('features')?.scrollIntoView({behavior:'smooth'}) }}>Features</a>
+          <a href="#pricing" style={{ color: 'inherit', textDecoration: 'none' }} onClick={e => { e.preventDefault(); document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'}) }}>Pricing</a>
+          <Link href="/sign-in" style={{ color: '#8b90a0', textDecoration: 'none' }}>Log in</Link>
         </div>
+        <Link href="/sign-up" style={{ background: '#00d4a0', color: '#001a12', padding: '8px 20px', borderRadius: 8, fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
+          Start free trial →
+        </Link>
       </nav>
 
-      {/* Hero */}
-      <section className="flex flex-col items-center text-center px-8 pt-24 pb-20">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[12px] font-medium mb-8 border"
-          style={{ background: 'var(--teal-dim)', borderColor: 'rgba(0,212,160,0.25)', color: 'var(--teal)' }}>
-          <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--teal)' }} />
+      {/* HERO */}
+      <section style={{ paddingTop: 140, paddingBottom: 80, textAlign: 'center', maxWidth: 900, margin: '0 auto', padding: '140px 48px 80px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,212,160,0.1)', border: '1px solid rgba(0,212,160,0.25)', borderRadius: 100, padding: '6px 16px', fontSize: 13, color: '#00d4a0', marginBottom: 32, fontWeight: 600 }}>
+          <span style={{ width: 7, height: 7, background: '#00d4a0', borderRadius: '50%', display: 'inline-block', animation: 'pulse-dot 2s infinite' }}/>
           Now in beta — 14-day free trial, no credit card required
         </div>
-        <h1 className="text-[56px] font-bold leading-[1.1] mb-6 max-w-3xl" style={{ letterSpacing: '-0.03em' }}>
-          The AI dashboard for <span style={{ color: 'var(--teal)' }}>ad agencies</span>
+        <h1 style={{ fontSize: 'clamp(40px, 6vw, 72px)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-2px', marginBottom: 24 }}>
+          Your ad spend is<br/>
+          <span style={{ color: '#00d4a0' }}>leaking money.</span><br/>
+          We stop it.
         </h1>
-        <p className="text-[18px] max-w-xl mb-10 leading-relaxed" style={{ color: 'var(--text2)' }}>
-          Track ROAS across Meta, Google and TikTok. Get AI-powered campaign insights.
-          Generate high-converting ad variants. All in one place.
+        <p style={{ fontSize: 20, color: '#8b90a0', maxWidth: 580, margin: '0 auto 40px', lineHeight: 1.6 }}>
+          Pulse is the AI-powered campaign dashboard that tells agencies exactly where to move budget, what to cut, and how to grow ROAS — automatically.
         </p>
-        <div className="flex items-center gap-3">
-          <Link href="/sign-up" className="px-7 py-3 rounded-[10px] text-[15px] font-semibold no-underline"
-            style={{ background: 'var(--teal)', color: '#001a12' }}>
-            Get started free
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/sign-up" style={{ background: '#00d4a0', color: '#001a12', padding: '14px 32px', borderRadius: 10, fontWeight: 800, fontSize: 16, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
+            Get started free <ArrowRight size={18}/>
           </Link>
-          <Link href="/sign-in" className="px-7 py-3 rounded-[10px] text-[15px] font-medium no-underline border"
-            style={{ borderColor: 'var(--border2)', color: 'var(--text)' }}>
-            View demo
-          </Link>
+          <a href="#features" onClick={e => { e.preventDefault(); document.getElementById('features')?.scrollIntoView({behavior:'smooth'}) }}
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#e8eaf0', padding: '14px 32px', borderRadius: 10, fontWeight: 600, fontSize: 16, textDecoration: 'none' }}>
+            See how it works
+          </a>
         </div>
-        <div className="flex items-center gap-6 mt-8">
-          {['No credit card required', '14-day free trial', 'Cancel anytime'].map((t, i) => (
-            <span key={i} className="flex items-center gap-1.5 text-[12px]" style={{ color: 'var(--text3)' }}>
-              <span style={{ color: 'var(--teal)' }}>✓</span> {t}
-            </span>
+        <p style={{ marginTop: 16, fontSize: 13, color: '#8b90a0' }}>
+          <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6 }}/>No credit card
+          <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6, marginLeft: 16 }}/>14-day trial
+          <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6, marginLeft: 16 }}/>Cancel anytime
+        </p>
+      </section>
+
+      {/* HERO DASHBOARD PREVIEW */}
+      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '0 48px 100px' }}>
+        <div style={{ background: '#13161d', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, overflow: 'hidden', boxShadow: '0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,160,0.1)' }}>
+          {/* Window chrome */}
+          <div style={{ background: '#0d0f14', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f57' }}/>
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#febc2e' }}/>
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#28c840' }}/>
+            <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: 6, padding: '4px 12px', marginLeft: 8, fontSize: 12, color: '#8b90a0', textAlign: 'center' }}>pulse-ruddy-psi.vercel.app/spend</div>
+          </div>
+          {/* AI insight banner */}
+          <div style={{ background: 'rgba(0,212,160,0.08)', borderBottom: '1px solid rgba(0,212,160,0.15)', padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 32, height: 32, background: '#00d4a0', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Zap size={16} color="#001a12"/>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#00d4a0' }}>⚡ Biggest quick win identified</div>
+              <div style={{ fontSize: 12, color: '#c8cad4', marginTop: 2 }}>Move £2,400 from Summer Sale (1.4x) → Retargeting (7.8x) · Projected <strong style={{ color: '#00d4a0' }}>+£14,280/mo revenue</strong></div>
+            </div>
+            <button style={{ marginLeft: 'auto', background: '#00d4a0', color: '#001a12', border: 'none', borderRadius: 6, padding: '6px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}>Apply →</button>
+          </div>
+          {/* KPI row */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: 'rgba(255,255,255,0.04)', padding: '0' }}>
+            {[['Monthly Spend','£9,750',''],['Monthly Revenue','£25,540','#00d4a0'],['Blended ROAS','2.62x','#00d4a0'],['Active Campaigns','6','']].map(([label,val,col],i) => (
+              <div key={i} style={{ background: '#13161d', padding: '20px 24px' }}>
+                <div style={{ fontSize: 10, color: '#8b90a0', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 8, fontWeight: 600 }}>{label}</div>
+                <div style={{ fontSize: 24, fontWeight: 800, fontFamily: 'monospace', color: col || '#e8eaf0' }}>{val}</div>
+              </div>
+            ))}
+          </div>
+          {/* Campaign table */}
+          <div style={{ padding: '0' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  {['Campaign','Platform','Spend','ROAS','Signal'].map(h => (
+                    <th key={h} style={{ textAlign: 'left', padding: '10px 24px', fontSize: 10, color: '#8b90a0', textTransform: 'uppercase', letterSpacing: '0.8px', fontWeight: 600 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {DEMO_CAMPAIGNS.map((c, i) => (
+                  <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)' }}>
+                    <td style={{ padding: '12px 24px', fontWeight: 600, color: '#e8eaf0' }}>{c.name}</td>
+                    <td style={{ padding: '12px 24px' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#8b90a0' }}>
+                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: PLATFORM_COLORS[c.platform], flexShrink: 0 }}/>
+                        {c.platform}
+                      </span>
+                    </td>
+                    <td style={{ padding: '12px 24px', fontFamily: 'monospace', color: '#c8cad4' }}>{c.spend}</td>
+                    <td style={{ padding: '12px 24px', fontFamily: 'monospace', fontWeight: 700, color: parseFloat(c.roas) >= 3 ? '#00d4a0' : '#ff5c5c' }}>{c.roas}</td>
+                    <td style={{ padding: '12px 24px' }}>
+                      <span style={{ background: c.signalColor + '18', color: c.signalColor, padding: '3px 10px', borderRadius: 4, fontSize: 11, fontWeight: 700 }}>{c.signal}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* STATS */}
+      <section id="stats-section" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '60px 48px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 40, textAlign: 'center' }}>
+          {[
+            { value: roas > 0 ? `${roas/10}x` : '0x', label: 'Average ROAS improvement' },
+            { value: spend > 0 ? `£${spend/10}M` : '£0M', label: 'Ad spend analysed' },
+            { value: clients > 0 ? `${clients}%` : '0%', label: 'Customer satisfaction' },
+            { value: '3 min', label: 'Average setup time' },
+          ].map((s, i) => (
+            <div key={i}>
+              <div style={{ fontSize: 44, fontWeight: 900, fontFamily: 'monospace', color: '#00d4a0', letterSpacing: '-2px', lineHeight: 1 }}>{s.value}</div>
+              <div style={{ fontSize: 13, color: '#8b90a0', marginTop: 8 }}>{s.label}</div>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* Dashboard Preview */}
-      <section className="px-8 pb-24 flex justify-center">
-        <div className="w-full max-w-5xl rounded-2xl border overflow-hidden"
-          style={{ borderColor: 'rgba(0,212,160,0.2)', background: 'var(--bg2)', boxShadow: '0 0 80px rgba(0,212,160,0.07)' }}>
-          <div className="flex items-center gap-1.5 px-4 py-3 border-b" style={{ borderColor: 'var(--border)', background: 'var(--bg3)' }}>
-            <div className="w-2.5 h-2.5 rounded-full bg-red-500"/>
-            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"/>
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'var(--teal)' }}/>
-            <span className="ml-3 text-[11px]" style={{ color: 'var(--text3)' }}>pulse-ruddy-psi.vercel.app</span>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-4 gap-3 mb-4">
-              {kpis.map((k, i) => (
-                <div key={i} className="rounded-lg p-3.5" style={{ background: 'var(--bg3)', border: '1px solid var(--border)' }}>
-                  <div className="text-[11px] mb-2" style={{ color: 'var(--text2)' }}>{k.label}</div>
-                  <div className="text-[22px] font-bold font-mono" style={{ color: k.color }}>{k.value}</div>
-                </div>
-              ))}
-            </div>
-            <div className="rounded-lg p-4" style={{ background: 'var(--bg3)', border: '1px solid var(--border)' }}>
-              <div className="text-[12px] font-semibold mb-3">All Campaigns</div>
-              {campaigns.map((c, i) => (
-                <div key={i} className="flex items-center justify-between py-2 border-t text-[12px]" style={{ borderColor: 'var(--border)' }}>
-                  <span className="font-medium">{c.name}</span>
-                  <span className="flex items-center gap-1.5" style={{ color: 'var(--text2)' }}>
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.dot }}/>
-                    {c.platform}
-                  </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold" style={{ background: 'rgba(0,212,160,0.1)', color: 'var(--teal)' }}>Active</span>
-                  <span className="font-mono font-bold" style={{ color: 'var(--teal)' }}>{c.roas}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="px-8 py-16 border-y" style={{ borderColor: 'var(--border)' }}>
-        <div className="flex items-center justify-center gap-20 flex-wrap max-w-4xl mx-auto">
-          {stats.map((s, i) => (
-            <div key={i} className="text-center">
-              <div className="text-[34px] font-bold" style={{ color: 'var(--teal)' }}>{s.value}</div>
-              <div className="text-[12px] mt-1" style={{ color: 'var(--text2)' }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features */}
-      <section id="features" className="px-8 py-24 max-w-5xl mx-auto">
-        <div className="text-center mb-16">
-          <div className="text-[12px] font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--teal)' }}>Features</div>
-          <h2 className="text-[38px] font-bold mb-4" style={{ letterSpacing: '-0.02em' }}>Everything your agency needs</h2>
-          <p className="text-[16px] max-w-lg mx-auto" style={{ color: 'var(--text2)' }}>
-            From real-time ROAS tracking to AI-generated ad copy, Pulse has the tools to scale your campaigns.
+      {/* FEATURES */}
+      <section id="features" style={{ padding: '100px 48px', maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 64 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#00d4a0', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>Features</div>
+          <h2 style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 900, letterSpacing: '-1.5px', lineHeight: 1.1 }}>
+            Everything your agency needs.<br/>
+            <span style={{ color: '#00d4a0' }}>Nothing it doesn't.</span>
+          </h2>
+          <p style={{ fontSize: 18, color: '#8b90a0', marginTop: 16, maxWidth: 480, margin: '16px auto 0' }}>
+            Built specifically for ad agencies managing multiple clients across Meta, Google and TikTok.
           </p>
         </div>
-        <div className="grid grid-cols-3 gap-5">
-          {features.map((f, i) => (
-            <div key={i} className="rounded-xl border p-5" style={{ background: 'var(--bg2)', borderColor: 'var(--border)' }}>
-              <div className="text-[28px] mb-3">{f.icon}</div>
-              <div className="text-[14px] font-semibold mb-2">{f.title}</div>
-              <div className="text-[13px] leading-relaxed" style={{ color: 'var(--text2)' }}>{f.desc}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+          {FEATURES.map((f, i) => (
+            <div key={i} onMouseEnter={() => setActiveFeature(i)}
+              style={{ background: activeFeature === i ? 'rgba(255,255,255,0.04)' : '#13161d', border: `1px solid ${activeFeature === i ? f.color + '40' : 'rgba(255,255,255,0.07)'}`, borderRadius: 14, padding: '28px 28px 24px', cursor: 'default', transition: 'all 0.2s', boxShadow: activeFeature === i ? `0 0 30px ${f.color}18` : 'none' }}>
+              <div style={{ width: 40, height: 40, background: f.color + '18', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: f.color, marginBottom: 16 }}>
+                {f.icon}
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>{f.title}</div>
+              <p style={{ fontSize: 13, color: '#8b90a0', lineHeight: 1.65, marginBottom: 16 }}>{f.desc}</p>
+              <div style={{ fontSize: 11, fontWeight: 600, color: f.color, background: f.color + '12', padding: '4px 10px', borderRadius: 6, display: 'inline-block' }}>{f.stat}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="px-8 py-24" style={{ background: 'var(--bg2)' }}>
-        <div className="text-center mb-16">
-          <div className="text-[12px] font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--teal)' }}>Pricing</div>
-          <h2 className="text-[38px] font-bold mb-4" style={{ letterSpacing: '-0.02em' }}>Simple, transparent pricing</h2>
-          <p className="text-[16px]" style={{ color: 'var(--text2)' }}>Start free for 14 days. No credit card required.</p>
-        </div>
-        <div className="grid grid-cols-3 gap-5 max-w-4xl mx-auto">
-          {plans.map((plan, i) => (
-            <div key={i} className="rounded-xl border flex flex-col relative overflow-hidden"
-              style={{
-                background: plan.highlight ? 'linear-gradient(160deg, rgba(0,212,160,0.07), var(--bg2))' : 'var(--bg)',
-                borderColor: plan.highlight ? 'rgba(0,212,160,0.4)' : 'var(--border)',
-              }}>
-              {plan.highlight && (
-                <div className="absolute top-0 right-0 text-[10px] font-bold px-3 py-1 rounded-bl-lg"
-                  style={{ background: 'var(--teal)', color: '#001a12' }}>MOST POPULAR</div>
-              )}
-              <div className="p-6 flex-1">
-                <div className="text-[13px] font-semibold mb-2" style={{ color: plan.highlight ? 'var(--teal)' : 'var(--text2)' }}>{plan.name}</div>
-                <div className="flex items-end gap-1 mb-5">
-                  <span className="text-[34px] font-bold">{plan.price}</span>
-                  <span className="text-[13px] mb-1" style={{ color: 'var(--text2)' }}>/mo</span>
-                </div>
-                <ul className="flex flex-col gap-2">
-                  {plan.features.map((f, j) => (
-                    <li key={j} className="flex items-start gap-2 text-[12px]">
-                      <span style={{ color: 'var(--teal)' }}>✓</span>
-                      <span style={{ color: 'var(--text2)' }}>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="p-6 pt-0">
-                <Link href="/sign-up"
-                  className="block w-full py-2.5 rounded-lg text-[13px] font-semibold text-center no-underline"
-                  style={{
-                    background: plan.highlight ? 'var(--teal)' : 'var(--bg3)',
-                    color: plan.highlight ? '#001a12' : 'var(--text)',
-                    border: plan.highlight ? 'none' : '1px solid var(--border2)',
-                  }}>
-                  Start free trial
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="px-8 py-24 text-center">
-        <h2 className="text-[42px] font-bold mb-5" style={{ letterSpacing: '-0.02em' }}>Ready to grow your agency?</h2>
-        <p className="text-[17px] mb-8 max-w-lg mx-auto" style={{ color: 'var(--text2)' }}>
-          Join agencies already using Pulse to track performance, cut wasted spend and generate better ad copy.
-        </p>
-        <Link href="/sign-up"
-          className="inline-block px-8 py-3.5 rounded-[10px] text-[15px] font-semibold no-underline"
-          style={{ background: 'var(--teal)', color: '#001a12' }}>
-          Get started free — no credit card needed
-        </Link>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t px-8 py-8 flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-[5px] flex items-center justify-center" style={{ background: 'var(--teal)' }}>
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
-              <path d="M2 8L8 2L14 8L8 14L2 8Z" fill="white"/>
-            </svg>
+      {/* TESTIMONIALS */}
+      <section style={{ background: '#0a0c11', padding: '80px 48px', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00d4a0', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 12 }}>What agencies say</div>
+            <h2 style={{ fontSize: 36, fontWeight: 900, letterSpacing: '-1px' }}>Agencies are switching from spreadsheets</h2>
           </div>
-          <span className="font-mono font-semibold text-[13px]">Pulse</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i} style={{ background: '#13161d', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '28px' }}>
+                <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
+                  {Array(t.stars).fill(0).map((_,j) => <Star key={j} size={14} fill="#00d4a0" color="#00d4a0"/>)}
+                </div>
+                <p style={{ fontSize: 14, lineHeight: 1.7, color: '#c8cad4', marginBottom: 20, fontStyle: 'italic' }}>"{t.quote}"</p>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700 }}>{t.name}</div>
+                  <div style={{ fontSize: 11, color: '#8b90a0', marginTop: 2 }}>{t.role}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="text-[12px]" style={{ color: 'var(--text3)' }}>2025 Pulse. All rights reserved.</div>
-        <div className="flex gap-5">
-          {['Privacy', 'Terms', 'Contact'].map(l => (
-            <a key={l} href="#" className="text-[12px] no-underline" style={{ color: 'var(--text3)' }}>{l}</a>
+      </section>
+
+      {/* PRICING */}
+      <section id="pricing" style={{ padding: '100px 48px', maxWidth: 1000, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#00d4a0', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>Pricing</div>
+          <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-1.5px', lineHeight: 1.1 }}>Simple, transparent pricing</h2>
+          <p style={{ fontSize: 17, color: '#8b90a0', marginTop: 12 }}>Start free for 14 days. No credit card required.</p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
+          {PLANS.map((plan, i) => (
+            <div key={i} style={{ background: plan.featured ? 'rgba(0,212,160,0.06)' : '#13161d', border: `1px solid ${plan.featured ? '#00d4a0' : 'rgba(255,255,255,0.08)'}`, borderRadius: 16, padding: '32px', position: 'relative', boxShadow: plan.featured ? '0 0 60px rgba(0,212,160,0.12)' : 'none' }}>
+              {plan.featured && (
+                <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: '#00d4a0', color: '#001a12', fontSize: 11, fontWeight: 800, padding: '4px 14px', borderRadius: 100 }}>MOST POPULAR</div>
+              )}
+              <div style={{ fontSize: 16, fontWeight: 700, color: plan.featured ? '#00d4a0' : '#e8eaf0', marginBottom: 4 }}>{plan.name}</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 8 }}>
+                <span style={{ fontSize: 40, fontWeight: 900, fontFamily: 'monospace', letterSpacing: '-2px', color: plan.featured ? '#00d4a0' : '#e8eaf0' }}>{plan.price}</span>
+                <span style={{ fontSize: 13, color: '#8b90a0' }}>{plan.per}</span>
+              </div>
+              <p style={{ fontSize: 13, color: '#8b90a0', marginBottom: 24, lineHeight: 1.5 }}>{plan.desc}</p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {plan.features.map((f, j) => (
+                  <li key={j} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13 }}>
+                    <Check size={14} color="#00d4a0" style={{ flexShrink: 0 }}/>
+                    <span style={{ color: '#c8cad4' }}>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href={plan.href} style={{ display: 'block', textAlign: 'center', background: plan.featured ? '#00d4a0' : 'rgba(255,255,255,0.07)', color: plan.featured ? '#001a12' : '#e8eaf0', padding: '13px', borderRadius: 10, fontWeight: 700, fontSize: 14, textDecoration: 'none', border: plan.featured ? 'none' : '1px solid rgba(255,255,255,0.1)' }}>
+                {plan.cta} {plan.featured ? '→' : ''}
+              </Link>
+            </div>
           ))}
         </div>
+        <div style={{ textAlign: 'center', marginTop: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, fontSize: 13, color: '#8b90a0' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Shield size={14} color="#00d4a0"/> Secured by Stripe</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Clock size={14} color="#00d4a0"/> Cancel anytime</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Check size={14} color="#00d4a0"/> GDPR compliant</span>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section style={{ padding: '80px 48px 120px', textAlign: 'center', background: 'linear-gradient(180deg, #0d0f14 0%, #0a0c11 100%)' }}>
+        <div style={{ maxWidth: 680, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 900, letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 20 }}>
+            Stop guessing.<br/>
+            <span style={{ color: '#00d4a0' }}>Start growing.</span>
+          </h2>
+          <p style={{ fontSize: 18, color: '#8b90a0', marginBottom: 36, lineHeight: 1.6 }}>
+            Join agencies already using Pulse to find wasted spend, scale winners, and deliver better results for their clients.
+          </p>
+          <Link href="/sign-up" style={{ background: '#00d4a0', color: '#001a12', padding: '16px 40px', borderRadius: 12, fontWeight: 800, fontSize: 17, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+            Start your 14-day free trial <ArrowRight size={20}/>
+          </Link>
+          <p style={{ marginTop: 16, fontSize: 13, color: '#8b90a0' }}>No credit card required · Takes 3 minutes to set up</p>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '40px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 24, height: 24, background: '#00d4a0', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 8L8 2L14 8L8 14L2 8Z" fill="white"/><path d="M5 8L8 5L11 8L8 11L5 8Z" fill="#0d0f14"/></svg>
+          </div>
+          <span style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: 14 }}>Pulse</span>
+          <span style={{ fontSize: 13, color: '#8b90a0', marginLeft: 8 }}>AI-powered campaign analytics for agencies</span>
+        </div>
+        <div style={{ fontSize: 12, color: '#8b90a0' }}>© 2026 Pulse. All rights reserved.</div>
       </footer>
+
+      <style>{`
+        @keyframes pulse-dot {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+      `}</style>
     </div>
   )
 }
