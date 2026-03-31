@@ -70,13 +70,13 @@ const PLANS = [
     name: 'Starter', price: '£99', per: '/month',
     desc: 'For growing agencies managing a handful of clients.',
     features: ['Up to 5 client accounts', '20 AI analysis calls/month', 'Campaign dashboard & insights', 'CSV data import', 'Client reports'],
-    cta: 'Start free trial', href: '/sign-up', featured: false,
+    cta: 'Get started', href: '/sign-up', featured: false,
   },
   {
     name: 'Pro', price: '£499', per: '/month',
     desc: 'For serious agencies scaling their ad operations.',
     features: ['Up to 25 client accounts', '100 AI analysis calls/month', 'AI Budget Reallocation', 'Ad Variant Generator', 'White-label reports', 'Priority support'],
-    cta: 'Start free trial', href: '/sign-up', featured: true,
+    cta: 'Get started', href: '/sign-up', featured: true,
   },
   {
     name: 'Agency', price: '£1,999', per: '/month',
@@ -139,7 +139,7 @@ export default function LandingPage() {
           <Link href="/sign-in" style={{ color: '#8b90a0', textDecoration: 'none' }}>Log in</Link>
         </div>
         <Link href="/sign-up" style={{ background: '#00d4a0', color: '#001a12', padding: '8px 20px', borderRadius: 8, fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
-          Start free trial →
+          Get started →
         </Link>
       </nav>
 
@@ -147,7 +147,7 @@ export default function LandingPage() {
       <section style={{ paddingTop: 140, paddingBottom: 80, textAlign: 'center', maxWidth: 900, margin: '0 auto', padding: '140px 48px 80px' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,212,160,0.1)', border: '1px solid rgba(0,212,160,0.25)', borderRadius: 100, padding: '6px 16px', fontSize: 13, color: '#00d4a0', marginBottom: 32, fontWeight: 600 }}>
           <span style={{ width: 7, height: 7, background: '#00d4a0', borderRadius: '50%', display: 'inline-block', animation: 'pulse-dot 2s infinite' }}/>
-          Now in beta — 14-day free trial, no credit card required
+          Now available — join agencies already using Pulse
         </div>
         <h1 style={{ fontSize: 'clamp(40px, 6vw, 72px)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-2px', marginBottom: 24 }}>
           Your ad spend is<br/>
@@ -159,7 +159,7 @@ export default function LandingPage() {
         </p>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link href="/sign-up" style={{ background: '#00d4a0', color: '#001a12', padding: '14px 32px', borderRadius: 10, fontWeight: 800, fontSize: 16, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
-            Get started free <ArrowRight size={18}/>
+            Get started <ArrowRight size={18}/>
           </Link>
           <a href="#features" onClick={e => { e.preventDefault(); document.getElementById('features')?.scrollIntoView({behavior:'smooth'}) }}
             style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#e8eaf0', padding: '14px 32px', borderRadius: 10, fontWeight: 600, fontSize: 16, textDecoration: 'none' }}>
@@ -167,8 +167,8 @@ export default function LandingPage() {
           </a>
         </div>
         <p style={{ marginTop: 16, fontSize: 13, color: '#8b90a0' }}>
-          <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6 }}/>No credit card
-          <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6, marginLeft: 16 }}/>14-day trial
+          <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6 }}/>Instant access
+          <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6, marginLeft: 16 }}/>Cancel anytime
           <Check size={13} style={{ display: 'inline', color: '#00d4a0', marginRight: 6, marginLeft: 16 }}/>Cancel anytime
         </p>
       </section>
@@ -309,7 +309,7 @@ export default function LandingPage() {
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#00d4a0', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>Pricing</div>
           <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-1.5px', lineHeight: 1.1 }}>Simple, transparent pricing</h2>
-          <p style={{ fontSize: 17, color: '#8b90a0', marginTop: 12 }}>Start free for 14 days. No credit card required.</p>
+          <p style={{ fontSize: 17, color: '#8b90a0', marginTop: 12 }}>Start free for 14 days. Instant access required.</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
           {PLANS.map((plan, i) => (
@@ -355,9 +355,9 @@ export default function LandingPage() {
             Join agencies already using Pulse to find wasted spend, scale winners, and deliver better results for their clients.
           </p>
           <Link href="/sign-up" style={{ background: '#00d4a0', color: '#001a12', padding: '16px 40px', borderRadius: 12, fontWeight: 800, fontSize: 17, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-            Start your 14-day free trial <ArrowRight size={20}/>
+            Get started today <ArrowRight size={20}/>
           </Link>
-          <p style={{ marginTop: 16, fontSize: 13, color: '#8b90a0' }}>No credit card required · Takes 3 minutes to set up</p>
+          <p style={{ marginTop: 16, fontSize: 13, color: '#8b90a0' }}>Instant access required · Set up in minutes</p>
         </div>
       </section>
 
