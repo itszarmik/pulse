@@ -140,10 +140,7 @@ export function Navbar() {
               className={clsx('p-1.5 rounded-lg transition-colors no-underline mr-1', pathname === '/settings' ? 'text-[var(--teal)] bg-[var(--teal-dim)]' : 'text-[var(--text3)] hover:text-[var(--text)] hover:bg-[var(--bg3)]')}>
               <Settings size={15} />
             </Link>
-            <span className="text-[11px] font-semibold px-2.5 py-[3px] rounded-full border"
-              style={{ color: 'var(--teal)', background: 'var(--teal-dim)', borderColor: 'var(--teal-dim2)' }}>
-              Free
-            </span>
+
             <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: 'w-7 h-7' } }} />
           </>
         ) : (
