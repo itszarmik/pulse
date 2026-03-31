@@ -19,12 +19,12 @@ type Analysis = {
 }
 
 const MOCK:Campaign[] = [
-  { id:'1', name:'Summer Sale â Broad Audience',  platform:'Meta',   spend:3200, revenue:4480,  roas:1.4, clicks:8200, impressions:142000, conversions:89,  ctr:5.77, cpc:0.39, status:'Active' },
-  { id:'2', name:'Retargeting â Cart Abandoners', platform:'Meta',   spend:800,  revenue:6240,  roas:7.8, clicks:1240, impressions:18600,  conversions:156, ctr:6.67, cpc:0.65, status:'Active' },
+  { id:'1', name:'Summer Sale — Broad Audience',  platform:'Meta',   spend:3200, revenue:4480,  roas:1.4, clicks:8200, impressions:142000, conversions:89,  ctr:5.77, cpc:0.39, status:'Active' },
+  { id:'2', name:'Retargeting — Cart Abandoners', platform:'Meta',   spend:800,  revenue:6240,  roas:7.8, clicks:1240, impressions:18600,  conversions:156, ctr:6.67, cpc:0.65, status:'Active' },
   { id:'3', name:'Brand Awareness Q3',            platform:'Google', spend:1500, revenue:1200,  roas:0.8, clicks:3100, impressions:89000,  conversions:24,  ctr:3.48, cpc:0.48, status:'Active' },
-  { id:'4', name:'Google Shopping â All Products',platform:'Google', spend:1200, revenue:5400,  roas:4.5, clicks:2800, impressions:41000,  conversions:108, ctr:6.83, cpc:0.43, status:'Active' },
-  { id:'5', name:'TikTok â Product Demo Video',   platform:'TikTok', spend:2100, revenue:2520,  roas:1.2, clicks:6700, impressions:198000, conversions:63,  ctr:3.38, cpc:0.31, status:'Active' },
-  { id:'6', name:'Lookalike â Past Purchasers',   platform:'Meta',   spend:950,  revenue:5700,  roas:6.0, clicks:1800, impressions:28000,  conversions:142, ctr:6.43, cpc:0.53, status:'Active' },
+  { id:'4', name:'Google Shopping — All Products',platform:'Google', spend:1200, revenue:5400,  roas:4.5, clicks:2800, impressions:41000,  conversions:108, ctr:6.83, cpc:0.43, status:'Active' },
+  { id:'5', name:'TikTok — Product Demo Video',   platform:'TikTok', spend:2100, revenue:2520,  roas:1.2, clicks:6700, impressions:198000, conversions:63,  ctr:3.38, cpc:0.31, status:'Active' },
+  { id:'6', name:'Lookalike — Past Purchasers',   platform:'Meta',   spend:950,  revenue:5700,  roas:6.0, clicks:1800, impressions:28000,  conversions:142, ctr:6.43, cpc:0.53, status:'Active' },
 ]
 
 const PLATFORM_COLORS: Record<string,string> = { Meta:'#1877f2', Google:'#ea4335', TikTok:'#00d4a0' }
@@ -93,7 +93,7 @@ export default function SpendPage() {
   const totalRevenue = campaigns.reduce((s,c)=>s+c.revenue,0)
   const avgROAS = totalSpend>0?totalRevenue/totalSpend:0
 
-  // Apply a budget move â updates local campaign state to show projected numbers
+  // Apply a budget move — updates local campaign state to show projected numbers
   const applyMove = (idx:number, move:BudgetMove) => {
     setAppliedMoves(prev => new Set([...prev, idx]))
     setCampaigns(prev => prev.map(c => {
@@ -146,7 +146,7 @@ export default function SpendPage() {
       {usingMock && (
         <div className="mb-5 px-4 py-3 rounded-lg border flex items-center gap-2 text-[12px]"
           style={{background:'rgba(255,170,68,0.08)',borderColor:'rgba(255,170,68,0.25)',color:'var(--warn)'}}>
-          <AlertTriangle size={13}/>Demo data shown â <a href="/import" className="underline ml-1">connect your ad platforms</a> to analyse real campaigns.
+          <AlertTriangle size={13}/>Demo data shown — <a href="/import" className="underline ml-1">connect your ad platforms</a> to analyse real campaigns.
         </div>
       )}
 
@@ -172,7 +172,7 @@ export default function SpendPage() {
       <div className="rounded-xl border overflow-hidden mb-5" style={{background:'var(--bg2)',borderColor:'var(--border)'}}>
         <div className="flex items-center justify-between px-5 py-3.5 border-b" style={{borderColor:'var(--border)'}}>
           <div className="text-[13px] font-semibold">Campaign overview</div>
-          <div className="text-[11px]" style={{color:'var(--text3)'}}>Sorted by ROAS â highest first</div>
+          <div className="text-[11px]" style={{color:'var(--text3)'}}>Sorted by ROAS — highest first</div>
         </div>
         <table className="w-full text-[12px]">
           <thead><tr style={{borderBottom:'1px solid var(--border)'}}>
