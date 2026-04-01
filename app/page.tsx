@@ -181,7 +181,7 @@ export default function LandingPage() {
             <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f57' }}/>
             <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#febc2e' }}/>
             <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#28c840' }}/>
-            <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: 6, padding: '4px 12px', marginLeft: 8, fontSize: 12, color: '#8b90a0', textAlign: 'center' }}>pulse-ruddy-psi.vercel.app/spend</div>
+            <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: 6, padding: '4px 12px', marginLeft: 8, fontSize: 12, color: '#8b90a0', textAlign: 'center' }}>pulsesolutions.co/spend</div>
           </div>
           {/* AI insight banner */}
           <div style={{ background: 'rgba(0,212,160,0.08)', borderBottom: '1px solid rgba(0,212,160,0.15)', padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
