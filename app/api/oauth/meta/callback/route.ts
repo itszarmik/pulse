@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   if (!userId) return NextResponse.redirect('/sign-in')
 
   const code = req.nextUrl.searchParams.get('code')
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://pulse-ruddy-psi.vercel.app'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://pulsesolutions.co'
   const redirectUri = `${appUrl}/api/oauth/meta/callback`
 
   if (!code) return NextResponse.redirect(`${appUrl}/import?error=meta_denied`)
