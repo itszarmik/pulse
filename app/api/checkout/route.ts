@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const priceId = PRICES[plan]
     if (!priceId) return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://pulse-ruddy-psi.vercel.app'
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://pulsesolutions.co'
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
