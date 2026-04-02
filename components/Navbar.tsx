@@ -54,7 +54,7 @@ export function Navbar() {
     >
       {/* Logo */}
       <Link href="/spend" className="flex items-center gap-2 mr-6 no-underline shrink-0">
-        <img src="/logo.png" alt="Pulse" className="w-7 h-7 object-contain" style={{}} />
+        <img src="/logo.png" alt="Pulse" className="w-7 h-7 object-contain" />
         <span className="font-mono font-bold text-[15px]" style={{ color: 'var(--text)' }}>Pulse</span>
       </Link>
 
