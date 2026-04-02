@@ -11,7 +11,7 @@ const PRIMARY_LINKS = [
   { href: '/spend', label: 'AI Spend' },
   { href: '/reports', label: 'Reports' },
   { href: '/alerts', label: 'Alerts' },
-  { href: '/accounts', label: 'Clients' },
+  { href: '/accounts', label: 'Clients' }
 ]
 
 // Tools dropdown
@@ -54,12 +54,7 @@ export function Navbar() {
     >
       {/* Logo */}
       <Link href="/spend" className="flex items-center gap-2 mr-6 no-underline shrink-0">
-        <div className="w-7 h-7 rounded-[7px] flex items-center justify-center" style={{ background: 'var(--teal)' }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M2 8L8 2L14 8L8 14L2 8Z" fill="white" />
-            <path d="M5 8L8 5L11 8L8 11L5 8Z" fill="#0d0f14" />
-          </svg>
-        </div>
+        <img src="/logo.png" alt="Pulse" className="w-7 h-7 object-contain" style={{}} />
         <span className="font-mono font-bold text-[15px]" style={{ color: 'var(--text)' }}>Pulse</span>
       </Link>
 
